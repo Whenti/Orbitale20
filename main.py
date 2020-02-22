@@ -3,13 +3,14 @@
 import pygame
 
 from game_callback import GameCallback, SceneId
+from scene_nolwenn import SceneNolwenn
 from scene_test import SceneTest
 
 
 class Game(GameCallback):
 
     TITLE = "PyGame Test"
-    WIDTH = 1700
+    WIDTH = 400
     RATIO = 16.0 / 9.0
     TICK = 40
 
@@ -54,7 +55,8 @@ class Game(GameCallback):
 
     def _set_scene(self):
         if self._scene_id == SceneId.TEST:
-            self._scene = SceneTest(self, self._screen)
+            #self._scene = SceneTest(self, self._screen)  #modif NL
+            self._scene = SceneNolwenn(self, self._screen)
         else:
             pass
         self._scene_id = None
