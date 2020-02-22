@@ -125,14 +125,14 @@ class Player(CompositeItem):
             print(self._z)
             self._v_speed -= 0.09
 
+        # ----------- jump ---------------
         if self._up and self._z <= 0:
-            #jump
             self._v_speed = 1.0
             self._set_animation(PlayerAnimation.JUMP)
 
+        # ---------- lay down ------------
         self._z += self._v_speed * 0.005
         if self._z < 0:
-            # lay down
             self._z = 0
             self._v_speed = 0
             self._set_animation(PlayerAnimation.RUN)
