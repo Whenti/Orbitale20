@@ -71,6 +71,7 @@ class RectItem(Item):
         self._size = size
         self._image_to_draw = None
         self._scene_rect = None
+        self._items = []
 
     def draw(self):
         #þ
@@ -98,6 +99,15 @@ class RectItem(Item):
         center = self._camera.size.x * zoom * (self._pos + translation) - self._camera.pos + 0.5 * self._camera.size
         self._scene_rect = self._image_to_draw.get_rect(center=center)
 
+    @property
+    def size(self):
+        return self._size
+
+    @property
+    def rect(self):
+        rect = (self.pos.x - 0.5 * self.size.x, self.pos.y - 0.5 * self.size.y, self.size.x, self.size.y)
+        l = 1000
+        return pygame.Rect(rect[0]*l, rect[1]*l, rect[2]*l, rect[3]*l)
 
 class ImageItem(RectItem):
 
@@ -160,7 +170,6 @@ class TextItem(RectItem):
         h_ratio = self._size.x/text_size[0]
         v_ratio = self._size.y/text_size[1]
         size = min(h_ratio, v_ratio)
-        print(size)
         real_size = (int(size * text_size[0] * self._camera.size.x), int(size * text_size[1] * self._camera.size.x))
         self._image = pygame.transform.scale(self._image, real_size)
 
@@ -168,6 +177,7 @@ class TextItem(RectItem):
 class CompositeItem(Item):
     def __init__(self, camera: Camera, pos: Vector2, size: Vector2, rotation: float = 0.0):
         super().__init__(camera, pos, rotation)
+        self._size = size
         self._items = []
 
     def draw(self):
@@ -194,3 +204,13 @@ class CompositeItem(Item):
         for item in self._items[1:]:
             rect.union(item.scene_rect)
         return rect
+
+    @property
+    def size(self):
+        return self._size
+
+    @property
+    def rect(self):
+        rect = (self.pos.x - 0.5 * self.size.x, self.pos.y - 0.5 * self.size.y, self.size.x, self.size.y)
+        l = 1000
+        return pygame.Rect(rect[0]*l, rect[1]*l, rect[2]*l, rect[3]*l)
