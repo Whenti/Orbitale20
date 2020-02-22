@@ -123,21 +123,24 @@ class ImageItem(RectItem):
         assert not (image is None and color is None)
 
         super().__init__(camera, pos, size, theta)
-        real_size = (int(self._size.x * self._camera.size.x), int(self._size.y * self._camera.size.x))
         if image is not None:
-            global _image_cache
-            if image in _image_cache:
-                self._image = _image_cache[image]
-            else:
-                self._image = pygame.image.load(os.path.join('./resources/images/', image))
-                self._image = pygame.transform.scale(self._image, real_size)
-                #self._image.set_colorkey((0, 0, 0))
-                _image_cache[image] = self._image
+            self.load_image(image)
         else:
+            real_size = (int(self._size.x * self._camera.size.x), int(self._size.y * self._camera.size.x))
             self._image = Surface(real_size)
             self._image.fill(color)
             self._image.set_colorkey((255, 0, 0))
 
+    def load_image(self, image):
+        global _image_cache
+        real_size = (int(self._size.x * self._camera.size.x), int(self._size.y * self._camera.size.x))
+        if image in _image_cache:
+            self._image = _image_cache[image]
+        else:
+            self._image = pygame.image.load(os.path.join('./resources/images/', image))
+            self._image = pygame.transform.scale(self._image, real_size)
+            # self._image.set_colorkey((0, 0, 0))
+            _image_cache[image] = self._image
 
 class TextItem(RectItem):
 
