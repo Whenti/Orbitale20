@@ -25,7 +25,7 @@ class PlayerAnimation(Enum):
 
 class Player(CompositeItem):
     def __init__(self, camera: Camera, pos: Vector2):
-        super().__init__(camera, pos, Vector2(0.1, 0.1))
+        super().__init__(camera, pos, Vector2(0.15, 0.15))
 
         self._power = 4
         self._T = None
@@ -134,9 +134,7 @@ class Player(CompositeItem):
                 self._speed = Vector2(0, 0)
             self._set_animation(PlayerAnimation.REST)
 
-        print(self._z)
         if self._z > 0:
-            print(self._z)
             self._v_speed -= 0.09
 
         # ----------- jump ---------------

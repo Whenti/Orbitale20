@@ -96,7 +96,9 @@ class RectItem(Item):
         rotation = int(self._theta + theta) % 360
         if rotation:
             self._image_to_draw = pygame.transform.rotate(self._image_to_draw, rotation)
-        center = self._camera.size.x * zoom * (self._pos + translation) - self._camera.pos + 0.5 * self._camera.size
+
+        camera_pos = self._camera.pos * self._camera.size.x
+        center = self._camera.size.x * zoom * (self._pos + translation) - zoom * camera_pos + 0.5 * self._camera.size
         self._scene_rect = self._image_to_draw.get_rect(center=center)
 
     @property
@@ -108,6 +110,7 @@ class RectItem(Item):
         rect = (self.pos.x - 0.5 * self.size.x, self.pos.y - 0.5 * self.size.y, self.size.x, self.size.y)
         l = 1000
         return pygame.Rect(rect[0]*l, rect[1]*l, rect[2]*l, rect[3]*l)
+
 
 class ImageItem(RectItem):
 
