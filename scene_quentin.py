@@ -16,8 +16,10 @@ from item import CompositeItem, Item, ImageItem
 
 
 class PlayerAnimation(Enum):
-    RUN = 0
     NONE = 0
+    RUN = 1
+    JUMP = 2
+
 
 
 class Player(CompositeItem):
@@ -25,9 +27,12 @@ class Player(CompositeItem):
         self._power = 0.0
         self._T = None
         self._t = 0
-        self._BASE_BODY_SIZE = Vector2(0.05, 0.08)
-        self._BASE_ARM_SIZE = Vector2(0.03, 0.13)
-        self._BASE_LEG_SIZE = Vector2(0.02, 0.13)
+        self._BASE_BODY_SIZE = Vector2(0.06, 0.08)
+        self._BASE_ARM_SIZE = Vector2(0.07, 0.1)
+        self._BASE_LEG_SIZE = Vector2(0.07, 0.13)
+
+        self._max_leg_rotation = 40
+        self._max_arm_rotation = 40
 
         super().__init__(camera, pos, Vector2(0.08, 0.09))
 
@@ -38,29 +43,31 @@ class Player(CompositeItem):
 
         color = (100, 100, 100)
 
-        self._body = ImageItem(camera, Vector2(0, 0), self._BASE_BODY_SIZE, color=color)
+        self._body = ImageItem(camera, Vector2(0, 0), self._BASE_BODY_SIZE, image='body_m.png')
         self._add_item(self._body)
+
         self._left_leg = ImageItem(camera,
                                    self._compute_leg_position(False),
                                    self._BASE_LEG_SIZE,
-                                   color=(255, 255, 0))
+                                   image='left_leg.png')
         self._add_item(self._left_leg)
+
         self._right_leg = ImageItem(camera,
                                     self._compute_leg_position(True),
                                     self._BASE_LEG_SIZE,
-                                    color=(255, 255, 0))
+                                    image='right_leg.png')
         self._add_item(self._right_leg)
 
         self._right_arm = ImageItem(camera,
                                     self._compute_arm_position(True),
                                     self._BASE_ARM_SIZE,
-                                    color=color)
+                                    image='right_arm_m.png')
         self._add_item(self._right_arm)
 
         self._left_arm = ImageItem(camera,
                                    self._compute_arm_position(False),
                                    self._BASE_ARM_SIZE,
-                                   color=color)
+                                   image='left_arm_m.png')
         self._add_item(self._left_arm)
 
         self._set_animation(PlayerAnimation.RUN)
@@ -72,14 +79,14 @@ class Player(CompositeItem):
 
     def _compute_leg_position(self, right):
         y = self._BASE_BODY_SIZE.y * 0.5
-        x = self._BASE_BODY_SIZE.x * 0.25
+        x = self._BASE_BODY_SIZE.x * 0.2
         if right:
             x *= -1
         return Vector2(x, y)
 
     def _compute_arm_position(self, right):
-        y = self._BASE_BODY_SIZE.y * (- 0.5)
-        x = self._BASE_BODY_SIZE.x * 0.7
+        y = self._BASE_BODY_SIZE.y * (- 0.2)
+        x = self._BASE_BODY_SIZE.x * 0.3
         if right:
             x *= -1
         return Vector2(x, y)
@@ -88,7 +95,16 @@ class Player(CompositeItem):
         self._t = 0
         self._animation = animation
         if self._animation == PlayerAnimation.RUN:
+            self._max_leg_rotation = 40
             self._T = 25
+        elif self._animation == PlayerAnimation.JUMP:
+            self._max_leg_rotation = 60
+            self._t = 0
+
+
+    def draw(self):
+        for item in [self._left_leg, self._left_arm, self._body, self._right_leg, self._right_arm]:
+            item.draw()
 
     def update(self, parent: Item = None):
         self._t += 1
@@ -104,27 +120,32 @@ class Player(CompositeItem):
             if self._speed.length() < 0.001:
                 self._speed = Vector2(0, 0)
 
-        if self._up and self._z <= 0:
-            self._v_speed = 1.0
-
-        if self._z >= 0:
-            self._z += self._v_speed * 0.005
+        print(self._z)
+        if self._z > 0:
+            print(self._z)
             self._v_speed -= 0.09
-            if self._z < 0:
-                self._z = 0
-                self._v_speed = 0
+
+        if self._up and self._z <= 0:
+            #jump
+            self._v_speed = 1.0
+            self._set_animation(PlayerAnimation.JUMP)
+
+        self._z += self._v_speed * 0.005
+        if self._z < 0:
+            # lay down
+            self._z = 0
+            self._v_speed = 0
+            self._set_animation(PlayerAnimation.RUN)
 
         self.set_pos(Vector2(self.pos.x + self._speed.x * 0.01, self._ground - self._z))
 
         lambda_ = self._t/self._T
 
-        max_arm_rotation = 40
-        self._left_arm.set_rotation(max_arm_rotation * math.cos(lambda_ * 2 * math.pi))
-        self._right_arm.set_rotation(-max_arm_rotation * math.cos(lambda_ * 2 * math.pi))
+        self._left_arm.set_rotation(self._max_arm_rotation * math.cos(lambda_ * 2 * math.pi))
+        self._right_arm.set_rotation(-self._max_arm_rotation * math.cos(lambda_ * 2 * math.pi))
 
-        max_leg_rotation = 40
-        self._left_leg.set_rotation(-max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
-        self._right_leg.set_rotation(max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
+        self._left_leg.set_rotation(-self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
+        self._right_leg.set_rotation(self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
 
         factor = self._power + 1
         arm_size = self._BASE_ARM_SIZE * factor
