@@ -23,7 +23,6 @@ class Player(CompositeItem):
         self._add_item(self._center_item)
         self._add_item(self._rotating_item)
         self._add_item(self._text_item)
-        self._mouse_over = False
 
     def update(self, parent: Item = None):
         self._rotating_item.rotate(-3)
@@ -43,8 +42,8 @@ class SceneTest(Scene):
         self._player.set_z_value(10)
         self._add_item(self._player)
 
-        self._rectangle = ImageItem(self._camera, Vector2(0.2, 0.2), Vector2(0.1, 0.1), color=(0, 0, 255))
-        self._rectangle = ImageItem(self._camera, Vector2(0.2, 0.2), Vector2(0.1, 0.1), image='img.png')
+        self._rectangle = ImageItem(self._camera, Vector2(0.2, 0.2), Vector2(0.1, 0.1), color=(0, 0, 250))
+        #self._rectangle = ImageItem(self._camera, Vector2(0.2, 0.2), Vector2(0.1, 0.1), image='img.png')
         self._add_item(self._rectangle)
 
         self._TIME = 100
@@ -60,7 +59,3 @@ class SceneTest(Scene):
         self._camera.dzoom(0.99)
         self._player.move(Vector2(0.01, 0))
         super().update()
-
-    def draw(self):
-        for item in self._items:
-            item.draw()
