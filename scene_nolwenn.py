@@ -40,6 +40,7 @@ class Protein(ImageItem):
     def __init__(self, camera, pos):
         protein_size = Vector2(0.05, 0.05)
         super().__init__(camera, pos, protein_size, color=(50, 50, 50))
+        self.set_z_value(25)
 
 
 class SceneNolwenn(Scene):
@@ -53,28 +54,39 @@ class SceneNolwenn(Scene):
         self._image_background = ImageItem(self._camera_background, Vector2(0, 0), Vector2(1, 9/16), image='background.png')
         self._add_item(self._image_background)
 
+        # defining roads y position
+        road_y_1 = 0.0
+        road_y_2 = 0.2
+
         # item image composite roads
-        self._road1 = Road(self._camera, Vector2(0, 0))
+        self._road1 = Road(self._camera, Vector2(0, road_y_1))
         self._road1.set_z_value(20)
         self._add_item(self._road1)
 
-        self._road2 = Road(self._camera, Vector2(0, 0.2))
+        self._road2 = Road(self._camera, Vector2(0, road_y_2))
         self._road2.set_z_value(20)
         self._add_item(self._road2)
 
         # roads
-        self._player = Player(self._camera, Vector2(0, 0))
-        self._player.set_z_value(10)
-        self._add_item(self._player)
+        self._player1 = Player(self._camera, Vector2(0, road_y_1 - 0.1))
+        self._player1.set_z_value(30)
+        self._add_item(self._player1)
+
+        self._player2 = Player(self._camera, Vector2(0, road_y_2 - 0.1))
+        self._player2.set_z_value(30)
+        self._add_item(self._player2)
 
         # proteins
         self._proteins1 = []
         self._proteins2 = []
 
-        self._proteins1.append(Protein(self._camera, Vector2(0, -0.05)))
-        self._proteins1.append(Protein(self._camera, Vector2(0.3, -0.05)))
-        self._proteins1.append(Protein(self._camera, Vector2(0.7, -0.05)))
-        self._proteins1.append(Protein(self._camera, Vector2(1, -0.05)))
+        # setting the road for both player
+        prot_delta = -0.02
+        for protein_list, road_y in zip([self._proteins1, self._proteins2], [road_y_1, road_y_2]):
+            protein_list.append(Protein(self._camera, Vector2(0, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(0.3, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(0.7, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(1, road_y + prot_delta)))
 
         for protein in self._proteins1 + self._proteins2:
             self._add_item(protein)
@@ -82,26 +94,38 @@ class SceneNolwenn(Scene):
     def manage_events(self, event: Event):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
-                    self._player.set_right(True)
+                    self._player1.set_right(True)
                 elif event.key == pygame.K_LEFT:
-                    self._player.set_left(True)
+                    self._player1.set_left(True)
                 elif event.key == pygame.K_UP:
-                    self._player.set_up(True)
+                    self._player1.set_up(True)
 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT:
-                    self._player.set_right(False)
+                    self._player1.set_right(False)
                 elif event.key == pygame.K_LEFT:
-                    self._player.set_left(False)
+                    self._player1.set_left(False)
                 elif event.key == pygame.K_UP:
-                    self._player.set_up(False)
+                    self._player1.set_up(False)
+
+    def _update_cameras(self):
+        camera_pos = Vector2(0.5 * self._player1.pos.x + 0.5 * self._player2.pos.x + 0.1/self._camera.zoom, 0)
+        self._camera.set_pos(camera_pos)
+
+        if abs((self._camera.pos - self._player1.pos).length()) > 0.3 / self._camera.zoom:
+            self._camera.dzoom(0.99)
+
+        self._camera_background.set_pos(0.1 * (self._camera.pos / self._screen.get_width()))
 
     def update(self):
-        self._camera_background.move(Vector2(0.5, 0))
-        self._camera.move(Vector2(2, 0))
+        self._update_cameras()
         super().update()
         for protein in self._proteins1:
-            if self._player.rect.colliderect(protein.rect):
+            if self._player1.rect.colliderect(protein.rect):
                 self._remove_item(protein)
                 self._proteins1.remove(protein)
 
+        for protein in self._proteins2:
+            if self._player2.rect.colliderect(protein.rect):
+                self._remove_item(protein)
+                self._proteins2.remove(protein)

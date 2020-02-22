@@ -34,7 +34,7 @@ class Player(CompositeItem):
         self._max_leg_rotation = 40
         self._max_arm_rotation = 40
 
-        super().__init__(camera, pos, Vector2(0.08, 0.09))
+        super().__init__(camera, pos, Vector2(0.15, 0.15))
 
         #jump
         self._z = 0
@@ -120,9 +120,7 @@ class Player(CompositeItem):
             if self._speed.length() < 0.001:
                 self._speed = Vector2(0, 0)
 
-        print(self._z)
         if self._z > 0:
-            print(self._z)
             self._v_speed -= 0.09
 
         # ----------- jump ---------------
