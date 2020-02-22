@@ -10,37 +10,7 @@ from scene import Scene
 
 import random
 
-from scene_quentin import Player
-
-
-class Road(CompositeItem):
-    def __init__(self, camera: Camera, pos: Vector2):
-        super().__init__(camera, pos, Vector2(-0.2, -0.3))
-
-        puzzle_width = 1/3
-        puzzle_height = 1/20
-
-        road_length = 10
-
-        self._puzzle_pieces = []
-        self._puzzle_pieces.append('road1.png')
-        #self._puzzle_pieces_append('xxx.png')
-
-
-        #affiche la route
-        for i in range(road_length):
-            rnd = random.randint(0, len(self._puzzle_pieces)-1)
-            self._add_item( ImageItem(self._camera,
-                                     Vector2( (-(1-puzzle_width)/2)+ i * puzzle_width, 0),
-                                     Vector2(puzzle_width, puzzle_height),
-                                     image=self._puzzle_pieces[rnd]) )
-
-
-class Protein(ImageItem):
-    def __init__(self, camera, pos):
-        protein_size = Vector2(0.05, 0.05)
-        super().__init__(camera, pos, protein_size, color=(50, 50, 50))
-        self.set_z_value(25)
+#from scene_quentin import Player
 
 
 class SceneNolwenn(Scene):
@@ -113,7 +83,7 @@ class SceneNolwenn(Scene):
         self._camera.set_pos(camera_pos)
 
         if abs((self._camera.pos - self._player1.pos).length()) > 0.3 / self._camera.zoom:
-            self._camera.dzoom(0.99)
+            self._camera.dzoom(-0.02)
 
         self._camera_background.set_pos(0.1 * (self._camera.pos / self._screen.get_width()))
 

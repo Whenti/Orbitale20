@@ -20,7 +20,7 @@ class Camera:
         self._zoom = zoom
 
     def dzoom(self, dzoom: float):
-        self._zoom *= dzoom
+        self._zoom += dzoom
 
     @property
     def size(self) -> Vector2:
