@@ -1,56 +1,71 @@
-import sys
-from enum import Enum
+#!/usr/local/bin/python
+# -*- coding: utf-8 -*-
+import pygame
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView
-
-from scene import Scene
+from game_callback import GameCallback, SceneId
 from scene_test import SceneTest
 
 
-class SceneMode(Enum):
-    TEST = 0
+class Game(GameCallback):
 
+    TITLE = "PyGame Test"
+    WIDTH = 1700
+    RATIO = 16.0 / 9.0
+    TICK = 40
 
-class ViewWindow:
-
-    def __init__(self, width: int, height: int, window: QMainWindow):
-        super().__init__()
-        self._WIDTH = width
-        self._HEIGHT = height
-        self._x = 0
-        self._y = 0
-
-        self._view = QGraphicsView()
-        self._view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self._view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self._view.setFixedSize(self._WIDTH, self._HEIGHT)
-
-        self._window = window
-        self._window.setCentralWidget(self._view)
-        self._window.setFixedSize(self._WIDTH, self._HEIGHT)
-        self._window.show()
-
+    def __init__(self):
+        pygame.display.set_caption(self.TITLE)
+        self._run = True
+        self._screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         self._scene = None
+        self._scene_id = None
+        self.set_scene_id(SceneId.TEST)
 
-    def set_scene_mode(self, scene_mode: SceneMode):
-        scene = None
-        if scene_mode == SceneMode.TEST:
-            scene = SceneTest(self._WIDTH, self._HEIGHT)
+    def loop(self):
+        while self._run:
+            pygame.time.delay(self.TICK)
+            self.manage_events()
 
-        if scene is not None:
-            self._view.setScene(scene.scene)
+            self._screen.fill((0, 0, 0))
+
+            if self._scene_id is not None:
+                self._set_scene()
+
+            if self._scene is not None:
+                self._scene.update()
+                self._scene.draw()
+            pygame.display.update()
+
+    def manage_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.quit()
+
+            keys = pygame.key.get_pressed()
+
+            if keys[pygame.K_ESCAPE]:
+                self.quit()
+
+    def quit(self):
+        self._run = False
+
+    def set_scene_id(self, scene_id: SceneId):
+        self._scene_id = scene_id
+
+    def _set_scene(self):
+        if self._scene_id == SceneId.TEST:
+            self._scene = SceneTest(self, self._screen)
+        else:
+            pass
+        self._scene_id = None
+
+    @property
+    def HEIGHT(self):
+        return int(Game.WIDTH / Game.RATIO)
 
 
 if __name__ == "__main__":
-
-    app = QApplication(sys.argv)
-
-    WIDTH = 1200
-    HEIGHT = 800
-
-    main_window = QMainWindow()
-    view_window = ViewWindow(WIDTH, HEIGHT, main_window)
-    view_window.set_scene_mode(SceneMode.TEST)
-
-    app.exec()
+    pygame.init()
+    game = Game()
+    game.loop()
+    pygame.quit()

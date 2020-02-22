@@ -1,30 +1,57 @@
-from PyQt5.QtWidgets import QGraphicsScene
+#!/usr/local/bin/python
+# -*- coding: utf-8 -*-
 
+import pygame
+from pygame.event import Event
+
+from game_callback import GameCallback
 from item import Item
-from scene_callback import SceneCallback
 
 
-class Scene(SceneCallback):
-
-    def __init__(self, width: int, height: int):
-        self._scene = QGraphicsScene()
-        self._scene.setSceneRect(0, 0, width, height)
-        self._WIDTH = width
-        self._HEIGHT = height
-        self._RATIO = self._HEIGHT/self._WIDTH
+class Scene:
+    def __init__(self, game_callback: GameCallback, screen: pygame.Surface):
+        self._game_callback = game_callback
+        self._screen = screen
+        self._items = []
 
     def _add_item(self, item: Item):
-        for graphic in item.graphic_items:
-            self._scene.addItem(graphic)
+        self._items.append(item)
 
-    @property
-    def width(self) -> float:
-        return float(self._WIDTH)
+    def _remove_item(self, item: Item):
+        self._items.remove(item)
 
-    @property
-    def ratio(self) -> float:
-        return self._RATIO
+    def manage_events(self, event: Event):
+        pass
 
-    @property
-    def scene(self):
-        return self._scene
+    def update(self):
+        for item in self._items:
+            item.update()
+
+    def draw(self):
+        sorted_items = sorted(self._items, key=lambda item_: item_.z_value)
+        for item in sorted_items:
+            item.draw()
+
+
+class CompositeScene(Scene):
+    def __init__(self, game_callback: GameCallback, screen: pygame.Surface):
+        super().__init__(game_callback, screen)
+        self._scenes = []
+
+    def _add_scene(self, scene: Scene):
+        self._scenes.append(scene)
+
+    def _remove_scene(self, scene: Scene):
+        self._scenes.remove(scene)
+
+    def manage_events(self, event: Event):
+        for scene in self._scenes:
+            scene.manage_events(event)
+
+    def update(self):
+        for scene in self._scenes:
+            scene.update()
+
+    def draw(self):
+        for scene in self._scenes:
+            scene.draw()
