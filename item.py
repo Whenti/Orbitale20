@@ -118,7 +118,7 @@ class ImageItem(RectItem):
             else:
                 self._image = pygame.image.load(os.path.join('./resources/images/', image))
                 self._image = pygame.transform.scale(self._image, real_size)
-                self._image.set_colorkey((255, 0, 0))
+                #self._image.set_colorkey((0, 0, 0))
                 _image_cache[image] = self._image
         else:
             self._image = Surface(real_size)

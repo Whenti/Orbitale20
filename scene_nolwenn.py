@@ -14,19 +14,14 @@ class Road(CompositeItem):
     def __init__(self, camera: Camera, pos: Vector2):
         super().__init__(camera, pos, Vector2(-0.2, -0.3))
 
-        brown1 = (153, 76, 0)
-        brown2 = (153, 0, 0)
-        brown3 = (204, 102, 0)
-
         puzzle_width = 1/3
         puzzle_height = 1/20
 
         road_length = 10
 
         self._puzzle_pieces = []
-        self._puzzle_pieces.append(brown1)
-        self._puzzle_pieces.append(brown2)
-        self._puzzle_pieces.append(brown3)
+        self._puzzle_pieces.append('road1.png')
+        #self._puzzle_pieces_append('xxx.png')
 
 
         #affiche la route
@@ -35,7 +30,7 @@ class Road(CompositeItem):
             self._add_item( ImageItem(self._camera,
                                      Vector2( (-(1-puzzle_width)/2)+ i * puzzle_width, 0),
                                      Vector2(puzzle_width, puzzle_height),
-                                     color=self._puzzle_pieces[rnd]) )
+                                     image=self._puzzle_pieces[rnd]) )
 
 
     #def update(self, parent: Item = None):
@@ -50,8 +45,8 @@ class SceneNolwenn(Scene):
 
         # item image background
         self._camera_background = Camera(self._screen);
-        self._image_background = ImageItem(self._camera_background, Vector2(0, 0), Vector2(1, 1), color=(0, 0, 250))
-        self._image_background.set_z_value = 10
+        self._image_background = ImageItem(self._camera_background, Vector2(0, 0), Vector2(1, 9/16), image='background.png')
+        #self._image_background.set_z_value = 10
         self._add_item(self._image_background)
 
 
@@ -70,6 +65,6 @@ class SceneNolwenn(Scene):
         pass
 
     def update(self):
-        self._camera_background.move(Vector2(0.1, 0))
+        self._camera_background.move(Vector2(0.5, 0))
         self._camera.move(Vector2(2, 0))
         super().update()

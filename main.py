@@ -3,6 +3,7 @@
 import pygame
 
 from game_callback import GameCallback, SceneId
+from scene_nolwenn import SceneNolwenn
 from scene_quentin import SceneQuentin
 from scene_test import SceneTest
 
@@ -62,6 +63,7 @@ class Game(GameCallback):
         elif self._scene_id == SceneId.NOLWENN:
             pass
         elif self._scene_id == SceneId.QUENTIN:
+            #self._scene = SceneNolwenn(self, self._screen)
             self._scene = SceneQuentin(self, self._screen)
         self._scene_id = None
 
