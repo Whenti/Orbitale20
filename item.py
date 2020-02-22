@@ -73,6 +73,7 @@ class RectItem(Item):
         self._scene_rect = None
 
     def draw(self):
+        #þ
         self._camera.screen.blit(self._image_to_draw, self._scene_rect.topleft)
 
     def update(self, parent: Item = None):
@@ -186,8 +187,6 @@ class CompositeItem(Item):
 
     @property
     def scene_rect(self) -> Rect:
-        if not self._items:
-            return None
         rect = self._items[0].scene_rect
         for item in self._items[1:]:
             rect.union(item.scene_rect)

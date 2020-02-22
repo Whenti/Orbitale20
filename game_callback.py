@@ -5,6 +5,8 @@ from enum import Enum
 
 class SceneId(Enum):
     TEST = 0
+    NOLWENN = 1
+    QUENTIN = 2
 
 
 class GameCallback:

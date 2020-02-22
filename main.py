@@ -3,13 +3,14 @@
 import pygame
 
 from game_callback import GameCallback, SceneId
+from scene_quentin import SceneQuentin
 from scene_test import SceneTest
 
 
 class Game(GameCallback):
 
     TITLE = "PyGame Test"
-    WIDTH = 1700
+    WIDTH = 1200
     RATIO = 16.0 / 9.0
     TICK = 40
 
@@ -19,7 +20,7 @@ class Game(GameCallback):
         self._screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         self._scene = None
         self._scene_id = None
-        self.set_scene_id(SceneId.TEST)
+        self.set_scene_id(SceneId.QUENTIN)
 
     def loop(self):
         while self._run:
@@ -46,6 +47,9 @@ class Game(GameCallback):
             if keys[pygame.K_ESCAPE]:
                 self.quit()
 
+            if self._scene is not None:
+                self._scene.manage_events(event)
+
     def quit(self):
         self._run = False
 
@@ -55,8 +59,10 @@ class Game(GameCallback):
     def _set_scene(self):
         if self._scene_id == SceneId.TEST:
             self._scene = SceneTest(self, self._screen)
-        else:
+        elif self._scene_id == SceneId.NOLWENN:
             pass
+        elif self._scene_id == SceneId.QUENTIN:
+            self._scene = SceneQuentin(self, self._screen)
         self._scene_id = None
 
     @property
