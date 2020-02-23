@@ -32,7 +32,7 @@ class Road(CompositeItem):
 
 class Protein(ImageItem):
     def __init__(self, camera, pos):
-        protein_size = Vector2(0.025, 0.05)
+        protein_size = Vector2(0.04, 0.07)
         super().__init__(camera, pos, protein_size, image='proteins.png')
         self.set_z_value(25)
 

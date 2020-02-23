@@ -205,9 +205,9 @@ class Player(CompositeItem):
                 self._set_animation(PlayerAnimation.RUN)
             else:
                 self._set_animation(PlayerAnimation.REST)
-        x_ = self._speed.x * 0.01
+        x_ = self._speed.x * 0.01 * 1.3
         if self._z > 0:
-            x_ *= 1.2
+            x_ *= 1.4
         self.set_pos(Vector2(self.pos.x + x_, self._ground - self._z + self._height_delta))
 
         # ------------ decreasing power with time ---------------
