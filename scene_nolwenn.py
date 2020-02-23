@@ -15,6 +15,7 @@ from scene_start import SceneStart
 from utils import Road, Protein, Car, Obstacle
 import random
 
+<<<<<<< HEAD
 from utils import Road, Protein, Car, Obstacle, Building
 
 class GameMode(Enum):
@@ -22,6 +23,9 @@ class GameMode(Enum):
     GAME = 1
     END = 2
     DONE = 3
+
+#from scene_quentin import Player
+from utils import Road, Protein, Car, Obstacle, Building
 
 
 class SceneNolwenn(Scene):

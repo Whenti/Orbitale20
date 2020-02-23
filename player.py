@@ -314,5 +314,6 @@ class Player(CompositeItem):
     def attack(self, car):
         if self._attacking_object is None:
             self._attacking_object = car
+            car.shaking_status(True)
             self._set_animation(PlayerAnimation.MOVE_HEAVY_OBJECT)
 

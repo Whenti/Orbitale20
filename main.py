@@ -24,7 +24,7 @@ class Game(GameCallback):
         self._scene = None
         self._scene_id = None
         self.set_scene_id(SceneId.FINAL)
-
+    
     def loop(self):
         while self._run:
             pygame.time.delay(self.TICK)
