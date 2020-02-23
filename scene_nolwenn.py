@@ -6,30 +6,22 @@ from pygame import Vector2
 
 from camera import Camera
 from game_callback import GameCallback
-from item import ImageItem, CompositeItem
+from item import ImageItem
 from player import Player
 from scene import Scene, CompositeScene
 from scene_finish import SceneFinish
 from scene_start import SceneStart
 
-<<<<<<< HEAD
 from utils import Road, Protein, Car, Obstacle
-=======
 import random
 
-#from scene_quentin import Player
 from utils import Road, Protein, Car, Obstacle, Building
-<<<<<<< HEAD
->>>>>>> 5ce46f64f4a9485b73221ca0c873b1dba7a9777f
-
 
 class GameMode(Enum):
     START = 0
     GAME = 1
     END = 2
     DONE = 3
-=======
->>>>>>> 5ce46f64f4a9485b73221ca0c873b1dba7a9777f
 
 
 class SceneNolwenn(Scene):
