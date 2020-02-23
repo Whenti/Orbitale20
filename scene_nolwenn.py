@@ -6,11 +6,13 @@ from pygame import Vector2
 from camera import Camera
 from game_callback import GameCallback
 from item import ImageItem, CompositeItem
+from player import Player
 from scene import Scene
 
 import random
 
 #from scene_quentin import Player
+from utils import Road, Protein
 
 
 class SceneNolwenn(Scene):
@@ -21,7 +23,7 @@ class SceneNolwenn(Scene):
 
         # item image background
         self._camera_background = Camera(self._screen);
-        self._image_background = ImageItem(self._camera_background, Vector2(0, 0), Vector2(1, 9/16), image='background.png')
+        self._image_background = ImageItem(self._camera_background, Vector2(0, 0), Vector2(1, 1), image='background.png')
         self._add_item(self._image_background)
 
         # defining roads y position
@@ -38,11 +40,11 @@ class SceneNolwenn(Scene):
         self._add_item(self._road2)
 
         # roads
-        self._player1 = Player(self._camera, Vector2(0, road_y_1 - 0.1))
+        self._player1 = Player(self._camera, Vector2(0, road_y_1 - 0.08))
         self._player1.set_z_value(30)
         self._add_item(self._player1)
 
-        self._player2 = Player(self._camera, Vector2(0, road_y_2 - 0.1))
+        self._player2 = Player(self._camera, Vector2(0, road_y_2 - 0.08))
         self._player2.set_z_value(30)
         self._add_item(self._player2)
 
@@ -92,10 +94,12 @@ class SceneNolwenn(Scene):
         super().update()
         for protein in self._proteins1:
             if self._player1.rect.colliderect(protein.rect):
+                self._player1.gain_power()
                 self._remove_item(protein)
                 self._proteins1.remove(protein)
 
         for protein in self._proteins2:
             if self._player2.rect.colliderect(protein.rect):
+                self._player2.gain_power()
                 self._remove_item(protein)
                 self._proteins2.remove(protein)

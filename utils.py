@@ -11,7 +11,7 @@ class Road(CompositeItem):
         super().__init__(camera, pos, Vector2(-0.2, -0.3))
 
         puzzle_width = 1/3
-        puzzle_height = 1/20
+        puzzle_height = 1/8
 
         road_length = 10
 
@@ -31,7 +31,7 @@ class Road(CompositeItem):
 
 class Protein(ImageItem):
     def __init__(self, camera, pos):
-        protein_size = Vector2(0.05, 0.05)
-        super().__init__(camera, pos, protein_size, color=(50, 50, 50))
+        protein_size = Vector2(0.2, 0.27)
+        super().__init__(camera, pos, protein_size, image='proteins.png')
         self.set_z_value(25)
 

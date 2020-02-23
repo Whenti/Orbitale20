@@ -19,23 +19,25 @@ class Player(CompositeItem):
     def __init__(self, camera: Camera, pos: Vector2):
         super().__init__(camera, pos, Vector2(0.15, 0.15))
 
-        self._power = 4
+        self._power = 1
         self._T = None
         self._t = 0
-        self._BASE_BODY_SIZE = Vector2(0.06, 0.08)
-        self._BASE_ARM_SIZE = Vector2(0.07, 0.1)
-        self._BASE_LEG_SIZE = Vector2(0.07, 0.13)
+        self._BASE_BODY_SIZE = Vector2(0.06, 0.15)
+        self._BASE_HEAD_SIZE = Vector2(0.08, 0.1)
+        self._BASE_ARM_SIZE = Vector2(0.07, 0.15)
+        self._BASE_LEG_SIZE = Vector2(0.1, 0.2)
 
         self._max_leg_rotation = 40
         self._max_arm_rotation = 40
 
         # ----------- initial body shape -------------
         self._muscle_level = 0
-        self._image_body = 'body_m.png'
+        self._image_body = 'body_w.png'
         self._image_right_arm = 'right_arm_w.png'
         self._image_left_arm = 'left_arm_w.png'
         self._image_left_leg = 'left_leg.png'
         self._image_right_leg = 'right_leg.png'
+        self._image_head = 'head.png'
 
         # ----------- jump management ---------------
         self._z = 0
@@ -46,6 +48,12 @@ class Player(CompositeItem):
 
         self._body = ImageItem(camera, Vector2(0, 0), self._BASE_BODY_SIZE, image=self._image_body)
         self._add_item(self._body)
+
+        self._head = ImageItem(camera,
+                               self._compute_head_position(),
+                               self._BASE_HEAD_SIZE,
+                               image=self._image_head)
+        self._add_item(self._head)
 
         self._left_leg = ImageItem(camera,
                                    self._compute_leg_position(False),
@@ -77,12 +85,19 @@ class Player(CompositeItem):
         self._up = False
         self._speed = Vector2(0, 0)
 
+    def _compute_head_position(self):
+        y = -(self._BASE_BODY_SIZE.y + self._BASE_HEAD_SIZE.y) * 0.2
+        x = self._BASE_BODY_SIZE.x * 0.1
+
+        return Vector2(x, y)
 
     def _compute_leg_position(self, right):
-        y = self._BASE_BODY_SIZE.y * 0.5
-        x = self._BASE_BODY_SIZE.x * 0.2
+        y = self._BASE_BODY_SIZE.y * 0.25
+        x = self._BASE_BODY_SIZE.x * 0.1
         if right:
             x *= -1
+        else:
+            x += 0.015
         return Vector2(x, y)
 
     def _compute_arm_position(self, right):
@@ -106,8 +121,22 @@ class Player(CompositeItem):
 
 
     def draw(self):
-        for item in [self._left_leg, self._left_arm, self._body, self._right_leg, self._right_arm]:
+        for item in [self._left_leg, self._left_arm, self._body, self._head, self._right_leg, self._right_arm]:
             item.draw()
+
+    def gain_power(self):
+        protein_power = 5
+        if self._power > 5:
+            self._power = 10
+        else:
+            self._power += protein_power
+
+
+
+    def loose_power(self):
+        power_lost = 0.05
+        if self._power > power_lost:
+            self._power -= power_lost
 
     def update(self, parent: Item = None):
         self._t += 1
@@ -115,7 +144,7 @@ class Player(CompositeItem):
             self._t = 0
 
         # ----------- move ---------------
-        factor_speed = 7-self._power
+        factor_speed = 10/self._power
         if self._right and not self._left:
             self._speed = Vector2(1, 0)*factor_speed
         elif self._left and not self._right:
@@ -131,7 +160,7 @@ class Player(CompositeItem):
 
         # ----------- jump ---------------
         if self._up and self._z <= 0:
-            factor_jump_height = 5-self._power
+            factor_jump_height = 5/self._power
             self._v_speed = 1.0 * factor_jump_height
             self._set_animation(PlayerAnimation.JUMP)
 
@@ -145,6 +174,10 @@ class Player(CompositeItem):
 
         self.set_pos(Vector2(self.pos.x + self._speed.x * 0.01, self._ground - self._z))
 
+        # ------------ decreasing power with time ---------------
+        self.loose_power()
+
+
         lambda_ = self._t/self._T
 
         self._left_arm.set_rotation(self._max_arm_rotation * math.cos(lambda_ * 2 * math.pi))
@@ -153,7 +186,7 @@ class Player(CompositeItem):
         self._left_leg.set_rotation(-self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
         self._right_leg.set_rotation(self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
 
-        self.update_body_size()
+        self.update_body_members_size()
 
         super().update()
 
@@ -166,8 +199,24 @@ class Player(CompositeItem):
     def set_up(self, up):
         self._up = up
 
-    def update_body_size(self):
-        factor = self._power
+    def update_body_members_size(self):
+        factor_members_size = 0.1*(self._power + 10)
+
+        # body members size
+        body_size = self._BASE_BODY_SIZE * factor_members_size
+        self._body.set_size(Vector2(body_size.x, self._BASE_BODY_SIZE.y))
+
+        head_size = self._BASE_HEAD_SIZE * factor_members_size
+        #self._head.set_size(head_size)
+
+        arm_size = self._BASE_ARM_SIZE * factor_members_size
+        self._left_arm.set_size(Vector2(arm_size.x, self._BASE_ARM_SIZE.y))
+        self._right_arm.set_size(Vector2(arm_size.x, self._BASE_ARM_SIZE.y))
+
+        leg_size = self._BASE_LEG_SIZE
+        self._left_leg.set_size(leg_size)
+        self._right_leg.set_size(leg_size)
+
 
         # thresholds
         muscle_level_m = 5
@@ -193,10 +242,4 @@ class Player(CompositeItem):
             self._body.load_image(bodies[new_muscle_level])
 
             self._muscle_level = new_muscle_level
-
-
-        # body size
-        body_size = self._BASE_BODY_SIZE * factor
-        arm_size = self._BASE_ARM_SIZE * factor
-        leg_size = self._BASE_LEG_SIZE
 
