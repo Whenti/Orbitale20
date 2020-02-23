@@ -203,7 +203,8 @@ class Player(CompositeItem):
         self.set_pos(Vector2(self.pos.x + self._speed.x * 0.01, self._ground - self._z + self._height_delta))
 
         # ------------ decreasing power with time ---------------
-        self.loose_power()
+        if self._animation != PlayerAnimation.MOVE_HEAVY_OBJECT:
+            self.loose_power()
 
         # ------------------------ arm synchronisation -----------------------
 
@@ -296,5 +297,6 @@ class Player(CompositeItem):
     def attack(self, car):
         if self._attacking_object is None:
             self._attacking_object = car
+            car.shaking_status(True)
             self._set_animation(PlayerAnimation.MOVE_HEAVY_OBJECT)
 

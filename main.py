@@ -23,7 +23,7 @@ class Game(GameCallback):
         self._screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         self._scene = None
         self._scene_id = None
-        self.set_scene_id(SceneId.FINISH)
+        self.set_scene_id(SceneId.NOLWENN)
 
     def loop(self):
         while self._run:
