@@ -19,6 +19,7 @@ import random
 
 #from scene_quentin import Player
 from utils import Road, Protein, Car, Obstacle, Building
+<<<<<<< HEAD
 >>>>>>> 5ce46f64f4a9485b73221ca0c873b1dba7a9777f
 
 
@@ -27,6 +28,8 @@ class GameMode(Enum):
     GAME = 1
     END = 2
     DONE = 3
+=======
+>>>>>>> 5ce46f64f4a9485b73221ca0c873b1dba7a9777f
 
 
 class SceneNolwenn(Scene):
