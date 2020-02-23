@@ -39,9 +39,16 @@ class Protein(ImageItem):
 
 class Obstacle(ImageItem):
     def __init__(self, camera, pos):
-        obstacle_size = Vector2(0.5, 0.5)
+        obstacle_size = Vector2(0.2, 0.2)
         super().__init__(camera, pos, obstacle_size, image='obstacle.png')
         self.set_z_value(27)
+
+    @property
+    def rect(self):
+        size = Vector2(self.size.x * 0.5, self.size.y)
+        rect = (self.pos.x - 0.5 * size.x, self.pos.y - 0.5 * size.y, size.x, size.y)
+        l = 1000
+        return pygame.Rect(rect[0]*l, rect[1]*l, rect[2]*l, rect[3]*l)
 
 
 class Car(ImageItem):
