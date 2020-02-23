@@ -103,7 +103,6 @@ class SceneNolwenn(Scene):
         self._camera.set_pos(camera_pos)
 
         diff = abs((self._camera.pos - self._player1.pos).length())
-        print(diff)
         if diff > 0.3 / self._camera.zoom:
             self._camera.set_zoom(0.3 / diff)
 

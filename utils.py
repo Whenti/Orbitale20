@@ -39,7 +39,7 @@ class Protein(ImageItem):
 
 class Obstacle(ImageItem):
     def __init__(self, camera, pos):
-        obstacle_size = Vector2(0.5, 0.5)
+        obstacle_size = Vector2(0.2, 0.2)
         super().__init__(camera, pos, obstacle_size, image='obstacle.png')
         self.set_z_value(27)
 
@@ -50,6 +50,7 @@ class Car(ImageItem):
         super().__init__(camera, pos, car_size, image='car.png')
         self.set_z_value(40)
         self.life = 100
+        self.max_life = self.life
         self._is_flying = False
         self._t = 0
         self._T = 10
