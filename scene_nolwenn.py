@@ -64,15 +64,15 @@ class SceneNolwenn(Scene):
         for protein_list, road_y in zip([self._proteins1, self._proteins2], [road_y_1, road_y_2]):
             prot_delta = -0.02
             protein_list.append(Protein(self._camera, Vector2(0, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(0.3, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(0.8, road_y + prot_delta)))
 
         for obstacle_list, road_y in zip([self._obstacles1, self._obstacles2], [road_y_1, road_y_2]):
-            obstacle_delta = -0.02
-            obstacle_list.append(Obstacle(self._camera, Vector2(0.8, road_y + obstacle_delta)))
+            obstacle_delta = -0.01
+            obstacle_list.append(Obstacle(self._camera, Vector2(0.3, road_y + obstacle_delta)))
 
         for car_list, road_y in zip([self._cars1, self._cars2], [road_y_1, road_y_2]):
             car_delta = -0.02
-            car_list.append(Car(self._camera, Vector2(0.5, road_y + car_delta)))
+            car_list.append(Car(self._camera, Vector2(0.9, road_y + car_delta)))
 
         for protein in self._proteins1 + self._proteins2:
             self._add_item(protein)
@@ -99,14 +99,21 @@ class SceneNolwenn(Scene):
                     self._player1.set_up(False)
 
     def _update_cameras(self):
+
         camera_pos = Vector2(0.5 * self._player1.pos.x + 0.5 * self._player2.pos.x + 0.1/self._camera.zoom, 0)
         self._camera.set_pos(camera_pos)
 
-        diff = abs((self._camera.pos - self._player1.pos).length())
-        if diff > 0.3 / self._camera.zoom:
-            self._camera.set_zoom(0.3 / diff)
+        referent_player = self._player2 if self._player2.pos.x > self._player1.pos.x else self._player2
+        diff = abs((self._camera.pos - referent_player.pos).length())
+        if diff > 0.42:
+            self._camera.set_zoom(0.42 / diff)
+        elif diff < 0.37:
+            if diff < 0.35:
+                diff = 0.35
+            self._camera.set_zoom(0.37 / diff)
 
         self._camera_background.set_pos(0.1 * (self._camera.pos / self._screen.get_width()))
+
 
     def update(self):
         self._update_cameras()
@@ -120,14 +127,18 @@ class SceneNolwenn(Scene):
 
         for player, obstacle_list in zip([self._player1, self._player2], [self._obstacles1, self._obstacles2]):
             for obstacle in obstacle_list:
-                if player.rect.colliderect(obstacle.rect):
-                    player.set_pos(Vector2(obstacle.pos.x - obstacle.size.x / 1.3, player.pos.y))
+                if obstacle.pos.x - player.pos.x < 0:
+                    obstacle.set_z_value(25)
+                else:
+                    obstacle.set_z_value(37)
+                if player.rect.colliderect(obstacle.rect) and player.pos.x - obstacle.pos.x < 0.028:
+                    player.set_pos(Vector2(obstacle.pos.x - obstacle.size.x * 0.1, player.pos.y))
                     player.stop()
 
         for player, car_list in zip([self._player1, self._player2], [self._cars1, self._cars2]):
             for car in car_list:
                 if player.rect.colliderect(car.rect):
                     player.attack(car)
-                    player.set_pos(Vector2(car.pos.x - car.size.x / 1.3, player.pos.y))
+                    player.set_pos(Vector2(car.pos.x - car.size.x / 3, player.pos.y))
                     player.stop()
 

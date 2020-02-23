@@ -117,14 +117,14 @@ class Player(CompositeItem):
         self._animation = animation
         if self._animation == PlayerAnimation.RUN:
             self._max_leg_rotation = 40
-            self._T = 25
+            self._T = 8
         elif self._animation == PlayerAnimation.JUMP:
             self._max_leg_rotation = 60
             self._t = 10
-            self._T = 25
+            self._T = 8
         elif self._animation == PlayerAnimation.REST:
             self._t = 5
-            self._T = 25
+            self._T = 8
         elif self._animation == PlayerAnimation.MOVE_HEAVY_OBJECT:
             self._T = 100
 
@@ -140,12 +140,11 @@ class Player(CompositeItem):
         else:
             self._power += protein_power
 
-
-
     def loose_power(self):
         power_lost = 0.05
-        if self._power > power_lost:
-            self._power -= power_lost
+        self._power -= power_lost
+        if self._power < 1:
+            self._power = 1
 
     def update(self, parent: Item = None):
         self._t += 1
@@ -155,7 +154,7 @@ class Player(CompositeItem):
         # ----------- move ---------------
 
         if not self._attacking_object:
-            factor_speed = 10 / self._power
+            factor_speed = (2 + 7 / self._power) * 0.3
             if self._right and not self._left:
                 if self._animation != PlayerAnimation.RUN:
                     self._set_animation(PlayerAnimation.RUN)
@@ -165,18 +164,19 @@ class Player(CompositeItem):
                     self._set_animation(PlayerAnimation.RUN)
                 self._speed = Vector2(-1, 0) * factor_speed
             else:
-                self._speed *= 0.9
+                self._speed *= 0.6
                 if self._speed.length() < 0.001:
                     self._speed = Vector2(0, 0)
                 self._set_animation(PlayerAnimation.REST)
 
+
             if self._z > 0:
-                self._v_speed -= 0.09
+                self._v_speed -= 0.35
 
             # ----------- jump ---------------
             if self._up and self._z <= 0:
-                factor_jump_height = 5 / self._power
-                self._v_speed = 1.0 * factor_jump_height
+                factor_jump_height = 1 + 1.7 / self._power
+                self._v_speed = 0.5 * factor_jump_height
                 self._set_animation(PlayerAnimation.JUMP)
 
         else:
@@ -185,7 +185,7 @@ class Player(CompositeItem):
                 self._attacking_object.fly()
                 self._attacking_object = None
 
-        self._z += self._v_speed * 0.005
+        self._z += self._v_speed * 0.05
 
         # ---------- lay down ------------
         if self._z < 0:
@@ -199,6 +199,10 @@ class Player(CompositeItem):
         self.loose_power()
 
         # ------------------------ arm synchronisation -----------------------
+
+        # if self._animation == PlayerAnimation.REST:
+        #     for part in [self._right_leg, self._left_leg, self._right_arm, self._left_arm]:
+        #         part.set_rotation(30)
 
         if self._attacking_object is None:
             lambda_ = self._t / self._T

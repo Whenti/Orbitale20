@@ -140,7 +140,7 @@ class SceneQuentin(Scene):
         for player, obstacle_list in zip([self._player1, self._player2], [self._obstacles1, self._obstacles2]):
             for obstacle in obstacle_list:
                 if player.rect.colliderect(obstacle.rect):
-                    player.set_pos(Vector2(obstacle.pos.x - obstacle.size.x / 1.3, player.pos.y))
+                    player.set_pos(Vector2(obstacle.pos.x + 3 * obstacle.size.x, player.pos.y))
                     player.stop()
 
         for player, car_list in zip([self._player1, self._player2], [self._cars1, self._cars2]):
