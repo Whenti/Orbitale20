@@ -8,7 +8,7 @@ from item import CompositeItem, ImageItem
 
 
 class Road(CompositeItem):
-    def __init__(self, camera: Camera, pos: Vector2):
+    def __init__(self, camera: Camera, pos: Vector2, image_keyboard: str):
         super().__init__(camera, pos, Vector2(-0.2, -0.3))
 
         puzzle_width = 1/3
@@ -17,22 +17,34 @@ class Road(CompositeItem):
         road_length = 40
 
         self._puzzle_pieces = []
-        self._puzzle_pieces.append('road1.png')
+        self._puzzle_pieces.append('road.png')
         #self._puzzle_pieces_append('xxx.png')
 
+        c = +0.2
+
+        self._add_item(ImageItem(self._camera,
+                                 Vector2((-(1 - puzzle_width) / 2)+c, 0),
+                                 Vector2(puzzle_width * 1.01, puzzle_height * 1.01),
+                                 image=image_keyboard))
 
         #affiche la route
-        for i in range(road_length):
+        for i in range(1, road_length):
             rnd = random.randint(0, len(self._puzzle_pieces)-1)
             self._add_item(ImageItem(self._camera,
-                                      Vector2( (-(1-puzzle_width)/2)+ i * puzzle_width, 0),
+                                      Vector2( (-(1-puzzle_width)/2)+ i * puzzle_width + c, 0),
                                       Vector2(puzzle_width * 1.01, puzzle_height * 1.01),
                                       image=self._puzzle_pieces[rnd]) )
+
+        self._add_item(ImageItem(self._camera,
+                                 Vector2((-(1 - puzzle_width) / 2) + road_length * puzzle_width + c, 0),
+                                 Vector2(puzzle_width * 1.01, puzzle_height * 1.01),
+                                 image='roadFinish.png'))
+
 
 
 class Protein(ImageItem):
     def __init__(self, camera, pos):
-        protein_size = Vector2(0.025, 0.05)
+        protein_size = Vector2(0.04, 0.07)
         super().__init__(camera, pos, protein_size, image='proteins.png')
         self.set_z_value(25)
 
