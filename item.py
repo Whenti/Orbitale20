@@ -72,12 +72,10 @@ class RectItem(Item):
         self._image_to_draw = None
         self._scene_rect = None
         self._items = []
+        self._parent = None
 
     def draw(self):
-        #þ
-        self._camera.screen.blit(self._image_to_draw, self._scene_rect.topleft)
-
-    def update(self, parent: Item = None):
+        parent = self._parent
         if parent is not None:
             translation = parent.pos
             theta = parent.theta
@@ -100,6 +98,10 @@ class RectItem(Item):
         camera_pos = self._camera.pos * self._camera.size.x
         center = self._camera.size.x * zoom * (self._pos + translation) - zoom * camera_pos + 0.5 * self._camera.size
         self._scene_rect = self._image_to_draw.get_rect(center=center)
+        self._camera.screen.blit(self._image_to_draw, self._scene_rect.topleft)
+
+    def update(self, parent: Item = None):
+        self._parent = parent
 
     @property
     def size(self):
@@ -141,6 +143,7 @@ class ImageItem(RectItem):
             self._image = pygame.transform.scale(self._image, real_size)
             # self._image.set_colorkey((0, 0, 0))
             _image_cache[image] = self._image
+
 
 class TextItem(RectItem):
 

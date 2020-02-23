@@ -77,6 +77,10 @@ class Player(CompositeItem):
         self._up = False
         self._speed = Vector2(0, 0)
 
+        self._attacking_object = None
+
+    def stop(self):
+        self._speed = Vector2(0, 0)
 
     def _compute_leg_position(self, right):
         y = self._BASE_BODY_SIZE.y * 0.5
@@ -115,25 +119,32 @@ class Player(CompositeItem):
             self._t = 0
 
         # ----------- move ---------------
-        factor_speed = 7-self._power
-        if self._right and not self._left:
-            self._speed = Vector2(1, 0)*factor_speed
-        elif self._left and not self._right:
-            self._speed = Vector2(-1, 0)*factor_speed
+        if not self._attacking_object:
+            factor_speed = 7-self._power
+            if self._right and not self._left:
+                self._speed = Vector2(1, 0)*factor_speed
+            elif self._left and not self._right:
+                self._speed = Vector2(-1, 0)*factor_speed
+            else:
+                self._speed *= 0.9
+                if self._speed.length() < 0.001:
+                    self._speed = Vector2(0, 0)
+                self._set_animation(PlayerAnimation.REST)
+
+            if self._z > 0:
+                self._v_speed -= 0.09
+
+            # ----------- jump ---------------
+            if self._up and self._z <= 0:
+                factor_jump_height = 5-self._power
+                self._v_speed = 1.0 * factor_jump_height
+                self._set_animation(PlayerAnimation.JUMP)
+
         else:
-            self._speed *= 0.9
-            if self._speed.length() < 0.001:
-                self._speed = Vector2(0, 0)
-            self._set_animation(PlayerAnimation.REST)
-
-        if self._z > 0:
-            self._v_speed -= 0.09
-
-        # ----------- jump ---------------
-        if self._up and self._z <= 0:
-            factor_jump_height = 5-self._power
-            self._v_speed = 1.0 * factor_jump_height
-            self._set_animation(PlayerAnimation.JUMP)
+            self._attacking_object.life -= 10
+            if self._attacking_object.life < 0:
+                self._attacking_object.fly()
+                self._attacking_object = None
 
         self._z += self._v_speed * 0.005
 
@@ -165,6 +176,9 @@ class Player(CompositeItem):
 
     def set_up(self, up):
         self._up = up
+
+    def attack(self, car):
+        self._attacking_object = car
 
     def update_body_size(self):
         factor = self._power

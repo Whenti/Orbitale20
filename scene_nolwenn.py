@@ -82,8 +82,10 @@ class SceneNolwenn(Scene):
         camera_pos = Vector2(0.5 * self._player1.pos.x + 0.5 * self._player2.pos.x + 0.1/self._camera.zoom, 0)
         self._camera.set_pos(camera_pos)
 
-        if abs((self._camera.pos - self._player1.pos).length()) > 0.3 / self._camera.zoom:
-            self._camera.dzoom(-0.02)
+        diff = abs((self._camera.pos - self._player1.pos).length())
+        print(diff)
+        if diff > 0.3 / self._camera.zoom:
+            self._camera.set_zoom(0.3 / diff)
 
         self._camera_background.set_pos(0.1 * (self._camera.pos / self._screen.get_width()))
 
