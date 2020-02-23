@@ -20,6 +20,7 @@ class Player(CompositeItem):
     def __init__(self, camera: Camera, pos: Vector2):
         super().__init__(camera, pos, Vector2(0.15, 0.15))
 
+        self._height_delta = 0.0
         self._power = 1
         self._T = None
         self._t = 0
@@ -28,8 +29,8 @@ class Player(CompositeItem):
         self._BASE_ARM_SIZE = Vector2(0.07, 0.15)
         self._BASE_LEG_SIZE = Vector2(0.1, 0.2)
 
-        self._max_leg_rotation = 40
-        self._max_arm_rotation = 40
+        self._max_leg_rotation = 50
+        self._max_arm_rotation = 60
 
         # ----------- initial body shape -------------
         self._muscle_level = 0
@@ -79,7 +80,7 @@ class Player(CompositeItem):
                                    self._BASE_ARM_SIZE,
                                    image=self._image_left_arm)
         self._add_item(self._left_arm)
-
+        self._animation = None
         self._set_animation(PlayerAnimation.RUN)
         self._right = False
         self._left = False
@@ -113,11 +114,14 @@ class Player(CompositeItem):
         return Vector2(x, y)
 
     def _set_animation(self, animation):
+        if animation == self._animation:
+            return
+        print(animation)
         self._t = 0
         self._animation = animation
         if self._animation == PlayerAnimation.RUN:
             self._max_leg_rotation = 40
-            self._T = 8
+            self._T = 10
         elif self._animation == PlayerAnimation.JUMP:
             self._max_leg_rotation = 60
             self._t = 10
@@ -156,10 +160,10 @@ class Player(CompositeItem):
         if not self._attacking_object:
             factor_speed = (2 + 7 / self._power) * 0.3
             if self._right and not self._left:
-                if self._animation != PlayerAnimation.RUN:
+                if self._animation != PlayerAnimation.RUN and self._z <= 0:
                     self._set_animation(PlayerAnimation.RUN)
                     self._speed = Vector2(1, 0) * factor_speed
-            elif self._left and not self._right:
+            elif self._left and not self._right and self._z <= 0:
                 if self._animation != PlayerAnimation.RUN:
                     self._set_animation(PlayerAnimation.RUN)
                 self._speed = Vector2(-1, 0) * factor_speed
@@ -167,8 +171,8 @@ class Player(CompositeItem):
                 self._speed *= 0.6
                 if self._speed.length() < 0.001:
                     self._speed = Vector2(0, 0)
-                self._set_animation(PlayerAnimation.REST)
-
+                if self._z <= 0:
+                    self._set_animation(PlayerAnimation.REST)
 
             if self._z > 0:
                 self._v_speed -= 0.35
@@ -180,7 +184,7 @@ class Player(CompositeItem):
                 self._set_animation(PlayerAnimation.JUMP)
 
         else:
-            self._attacking_object.life -= 10
+            self._attacking_object.life -= 2 + self._power
             if self._attacking_object.life < 0:
                 self._attacking_object.fly()
                 self._attacking_object = None
@@ -191,35 +195,50 @@ class Player(CompositeItem):
         if self._z < 0:
             self._z = 0
             self._v_speed = 0
-            self._set_animation(PlayerAnimation.RUN)
+            if (self._right and not self._left) or (not self._right and self._left):
+                self._set_animation(PlayerAnimation.RUN)
+            else:
+                self._set_animation(PlayerAnimation.REST)
 
-        self.set_pos(Vector2(self.pos.x + self._speed.x * 0.01, self._ground - self._z))
+        self.set_pos(Vector2(self.pos.x + self._speed.x * 0.01, self._ground - self._z + self._height_delta))
 
         # ------------ decreasing power with time ---------------
         self.loose_power()
 
         # ------------------------ arm synchronisation -----------------------
 
-        # if self._animation == PlayerAnimation.REST:
-        #     for part in [self._right_leg, self._left_leg, self._right_arm, self._left_arm]:
-        #         part.set_rotation(30)
+        self.update_body_members_size()
+        self._height_delta = 0
+        if self._animation == PlayerAnimation.REST:
+            for part in [self._right_leg, self._left_leg, self._right_arm, self._left_arm]:
+                part.set_rotation(0)
 
-        if self._attacking_object is None:
+        elif self._animation == PlayerAnimation.RUN:
             lambda_ = self._t / self._T
             self._left_arm.set_rotation(self._max_arm_rotation * math.cos(lambda_ * 2 * math.pi))
             self._right_arm.set_rotation(-self._max_arm_rotation * math.cos(lambda_ * 2 * math.pi))
+            self._left_leg.set_rotation(-self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
+            self._right_leg.set_rotation(self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
+            self._height_delta = 0.005 * math.cos(lambda_ * 2 * math.pi)
 
-        else:
-            self._t = 100 - (self._attacking_object.life/self._attacking_object.max_life * 100)
+        elif self._animation == PlayerAnimation.MOVE_HEAVY_OBJECT:
+            if self._attacking_object is not None:
+                self._t = 100 - (self._attacking_object.life/self._attacking_object.max_life * 100)
+            else:
+                self._t = 100
             lambda_ = self._t / self._T
-            self._left_arm.set_rotation(self._max_arm_rotation * 3 * lambda_ - 30)
-            self._right_arm.set_rotation(self._max_arm_rotation * 3 * lambda_ - 30)
+            if lambda_ < 0.5:
+                self._left_arm.set_rotation(- 30)
+                self._right_arm.set_rotation(- 30)
+            else:
+                self._left_arm.set_rotation(self._max_arm_rotation * 3 * 2 * (lambda_ - 0.5) - 30)
+                self._right_arm.set_rotation(self._max_arm_rotation * 3 * 2 * (lambda_ - 0.5) - 30)
 
-        self._left_leg.set_rotation(-self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
-        self._right_leg.set_rotation(self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
-
-        self.update_body_members_size()
-
+        elif self._animation == PlayerAnimation.JUMP:
+                self._left_arm.set_rotation(90)
+                self._right_arm.set_rotation(-90)
+                self._left_leg.set_rotation(-90)
+                self._right_leg.set_rotation(90)
         super().update()
 
     def set_right(self, right):

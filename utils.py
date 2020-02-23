@@ -26,7 +26,7 @@ class Road(CompositeItem):
             rnd = random.randint(0, len(self._puzzle_pieces)-1)
             self._add_item(ImageItem(self._camera,
                                       Vector2( (-(1-puzzle_width)/2)+ i * puzzle_width, 0),
-                                      Vector2(puzzle_width, puzzle_height),
+                                      Vector2(puzzle_width * 1.01, puzzle_height * 1.01),
                                       image=self._puzzle_pieces[rnd]) )
 
 
@@ -45,7 +45,6 @@ class Obstacle(ImageItem):
 
     @property
     def rect(self):
-        print(self.size.x)
         size = Vector2(self.size.x * 0.05, self.size.y * 0.1)
         pos = Vector2(self.pos.x, self.pos.y)
         rect = (pos.x - 0.5 * size.x + 0.05, pos.y - 0.5 * size.y, size.x, size.y)

@@ -98,15 +98,30 @@ class SceneNolwenn(Scene):
                 elif event.key == pygame.K_UP:
                     self._player1.set_up(False)
 
-    def _update_cameras(self):
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_d:
+                    self._player2.set_right(True)
+                elif event.key == pygame.K_a:
+                    self._player2.set_left(True)
+                elif event.key == pygame.K_w:
+                    self._player2.set_up(True)
 
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_d:
+                    self._player2.set_right(False)
+                elif event.key == pygame.K_a:
+                    self._player2.set_left(False)
+                elif event.key == pygame.K_w:
+                    self._player2.set_up(False)
+
+    def _update_cameras(self):
         camera_pos = Vector2(0.5 * self._player1.pos.x + 0.5 * self._player2.pos.x + 0.1/self._camera.zoom, 0)
         self._camera.set_pos(camera_pos)
 
         referent_player = self._player2 if self._player2.pos.x > self._player1.pos.x else self._player2
         diff = abs((self._camera.pos - referent_player.pos).length())
-        if diff > 0.42:
-            self._camera.set_zoom(0.42 / diff)
+        if diff > 0.48:
+            self._camera.set_zoom(0.48 / diff)
         elif diff < 0.37:
             if diff < 0.35:
                 diff = 0.35
