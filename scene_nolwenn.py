@@ -62,6 +62,13 @@ class SceneNolwenn(Scene):
         self._player2.set_z_value(30)
         self._add_item(self._player2)
 
+        self._arrows = ImageItem(self._camera, Vector2(0, road_y_1 - 0.08), Vector2(0.3, 0.3), image='img.png')
+        self._arrows.set_z_value(50)
+        self._wasd = ImageItem(self._camera, Vector2(0, road_y_2 - 0.08), Vector2(0.3, 0.3), image='img.png')
+        self._wasd.set_z_value(50)
+        self._add_item(self._arrows)
+        self._add_item(self._wasd)
+
         # proteins
         self._proteins1 = []
         self._proteins2 = []

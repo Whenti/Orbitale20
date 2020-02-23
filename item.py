@@ -76,11 +76,12 @@ class RectItem(Item):
         self._parent = None
         self._transparency = 255
 
-    def draw(self):
-        diff_cam = (self._camera.pos.x - self.pos.x)
-        if diff_cam > 0.8/self._camera.zoom:
-            return
+    def draw(self, force = False):
         parent = self._parent
+        if parent is not None and not force:
+            diff_cam = (self._camera.pos.x - self.pos.x)
+            if diff_cam > 0.8/self._camera.zoom:
+                return
         if parent is not None:
             translation = parent.pos
             theta = parent.theta

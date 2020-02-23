@@ -15,7 +15,7 @@ import os
 class Game(GameCallback):
 
     TITLE = "PyGame Test"
-    WIDTH = 1200
+    WIDTH = 1700
     RATIO = 16.0 / 9.0
     TICK = 40
 
@@ -25,9 +25,10 @@ class Game(GameCallback):
         self._screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         self._scene = None
         self._scene_id = None
-        self.set_scene_id(SceneId.FINAL)
+        self.set_scene_id(SceneId.INTRO)
         self._image = pygame.image.load(os.path.join('./resources/images/', 'background.png'))
         self._image = pygame.transform.scale(self._image, (int(self.WIDTH), int(self.HEIGHT)))
+        pygame.mixer.init()
 
     def loop(self):
         while self._run:

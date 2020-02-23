@@ -16,6 +16,8 @@ class SceneStart(Scene):
     def __init__(self, game_callback: GameCallback, screen: pygame.Surface):
         super().__init__(game_callback, screen)
         self._camera = Camera(self._screen)
+        self._bip = pygame.mixer.Sound('./resources/sounds/bip.wav')
+        self._bipp = pygame.mixer.Sound('./resources/sounds/final_bip.wav')
 
         self._width_funny_object = 0.3
         self._height_funny_object = 0.5
@@ -45,6 +47,11 @@ class SceneStart(Scene):
     def update(self):
         self._t += 1
         i = self._t % self._T
+
+        # if self._t == 1 or self._t == self._T or self._t == 2.3 * self._T:
+        #     self._bip.play()
+        # if self._t == 3.3 * self._T:
+        #     self._bipp.play()
 
         if self._t < self._T:
             step = 3

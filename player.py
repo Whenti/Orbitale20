@@ -1,5 +1,7 @@
 from enum import Enum
+import random
 
+import pygame
 from pygame import Vector2
 import math
 
@@ -21,6 +23,9 @@ class Player(CompositeItem):
     def __init__(self, camera: Camera, pos: Vector2):
         super().__init__(camera, pos, Vector2(0.15, 0.15))
 
+        # self._hop = pygame.mixer.Sound('./resources/sounds/hop.wav')
+        # self._burg = pygame.mixer.Sound('./resources/sounds/burg.wav')
+        # self._burgg = pygame.mixer.Sound('./resources/sounds/burgg.wav')
         self._height_delta = 0.0
         self._power = 1
         self.test = False
@@ -141,9 +146,18 @@ class Player(CompositeItem):
 
     def draw(self):
         for item in [self._left_arm, self._left_leg,  self._body, self._head, self._right_leg, self._right_arm]:
-            item.draw()
+            item.draw(self)
 
     def gain_power(self):
+        rd = random.randint(0, 20)
+        # if rd == 0:
+        #     self._burg.stop()
+        #     self._burgg.stop()
+        #     self._burgg.play()
+        # elif rd == 1:
+        #     self._burg.stop()
+        #     self._burgg.stop()
+        #     self._burg.play()
         protein_power = 5
         if self._power > 5:
             self._power = 10
@@ -188,6 +202,7 @@ class Player(CompositeItem):
                 factor_jump_height = 1 + 1.7 / self._power
                 self._v_speed = 0.5 * factor_jump_height
                 self._set_animation(PlayerAnimation.JUMP)
+                # self._hop.play()
 
         else:
             self._attacking_object.life -= 2 + self._power
