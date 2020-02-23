@@ -9,6 +9,7 @@ from scene_nolwenn import SceneNolwenn, GameScene
 from scene_quentin import SceneQuentin
 from scene_start import SceneStart
 from scene_test import SceneTest
+import os
 
 
 class Game(GameCallback):
@@ -16,7 +17,7 @@ class Game(GameCallback):
     TITLE = "PyGame Test"
     WIDTH = 1200
     RATIO = 16.0 / 9.0
-    TICK = 80
+    TICK = 40
 
     def __init__(self):
         pygame.display.set_caption(self.TITLE)
@@ -25,13 +26,15 @@ class Game(GameCallback):
         self._scene = None
         self._scene_id = None
         self.set_scene_id(SceneId.FINAL)
-    
+        self._image = pygame.image.load(os.path.join('./resources/images/', 'background.png'))
+        self._image = pygame.transform.scale(self._image, (int(self.WIDTH), int(self.HEIGHT)))
+
     def loop(self):
         while self._run:
             pygame.time.delay(self.TICK)
             self.manage_events()
 
-            self._screen.fill((0, 0, 0))
+            self._screen.blit(self._image, pygame.Vector2(0.0, 0.0))
 
             if self._scene_id is not None:
                 self._set_scene()

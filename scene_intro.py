@@ -26,10 +26,6 @@ class SceneIntro(Scene):
 
         self._zoom = 0.7
 
-        self._camera_background = Camera(self._screen)
-        self._image_background = ImageItem(self._camera_background, Vector2(0, 0), Vector2(1, 1), image='background.png')
-        self._add_item(self._image_background)
-
         self._camera = Camera(self._screen)
         self._camera.set_pos(Vector2(0.0, -0.3))
         self._camera.set_zoom(3.1)
@@ -135,7 +131,7 @@ class SceneIntro(Scene):
         elif self._end_time:
             self._end_time += 1
             self._camera.set_zoom(self._camera.zoom * 0.9)
-            self._camera.move(Vector2(-0.10/self._camera.zoom, 0))
+            self._camera.move(Vector2(-0.40/self._camera.zoom, 0))
             if self._end_time >= 20:
                 self._game_callback.set_scene_id(SceneId.FINAL)
 

@@ -77,6 +77,9 @@ class RectItem(Item):
         self._transparency = 255
 
     def draw(self):
+        diff_cam = (self._camera.pos.x - self.pos.x)
+        if diff_cam > 0.8/self._camera.zoom:
+            return
         parent = self._parent
         if parent is not None:
             translation = parent.pos
@@ -142,18 +145,14 @@ class ImageItem(RectItem):
 
     def load_image(self, image):
         global _image_cache
-        real_size = (int(self._size.x * self._camera.size.x), int(self._size.y * self._camera.size.x))
         if image in _image_cache:
             self._image = _image_cache[image]
         else:
             self._image = pygame.image.load(os.path.join('./resources/images/', image))
-            # self._image.set_colorkey((0, 0, 0))
             _image_cache[image] = self._image
 
 
-
 class TextItem(RectItem):
-
     def __init__(self,
                  camera: Camera,
                  pos: Vector2,
