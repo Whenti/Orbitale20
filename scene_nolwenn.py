@@ -45,11 +45,11 @@ class SceneNolwenn(Scene):
         road_y_2 = 0.2
 
         # item image composite roads
-        self._road1 = Road(self._camera, Vector2(0, road_y_1))
+        self._road1 = Road(self._camera, Vector2(0, road_y_1), 'road1.png')
         self._road1.set_z_value(20)
         self._add_item(self._road1)
 
-        self._road2 = Road(self._camera, Vector2(0, road_y_2))
+        self._road2 = Road(self._camera, Vector2(0, road_y_2), 'road2.png')
         self._road2.set_z_value(20)
         self._add_item(self._road2)
 
