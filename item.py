@@ -180,8 +180,6 @@ class TextItem(RectItem):
     def set_text(self, text: str):
         self._text = text
         self._image = self._font.render(self._text, True, self._foreground_color, self._background_color)
-        if self._background_color is None:
-            self._image.set_colorkey((255, 0, 0))
         text_size = self._image.get_size()
         h_ratio = self._size.x/text_size[0]
         v_ratio = self._size.y/text_size[1]

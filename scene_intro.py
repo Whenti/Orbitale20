@@ -29,7 +29,7 @@ class SceneIntro(Scene):
         self._zoom = 0.7
 
         self._camera_entree = Camera(self._screen)
-        self._entree = ImageItem(self._camera_entree, Vector2(0.3, 0.2), Vector2(0.10, 0.10), image='img.png')
+        self._entree = ImageItem(self._camera_entree, Vector2(0.3, 0.2), Vector2(0.10, 0.20), image='enter.png')
         self._add_item(self._entree)
 
         self._camera = Camera(self._screen)

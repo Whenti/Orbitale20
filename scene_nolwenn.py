@@ -6,16 +6,13 @@ from pygame import Vector2
 
 from camera import Camera
 from game_callback import GameCallback, SceneId
-from item import ImageItem
 from player import Player
 from scene import Scene, CompositeScene
 from scene_finish import SceneFinish
 from scene_start import SceneStart
 
 from utils import Road, Protein, Car, Obstacle, Rock
-import random
 
-from utils import Road, Protein, Car, Obstacle, Building
 
 
 class GameMode(Enum):
@@ -24,7 +21,6 @@ class GameMode(Enum):
     END = 2
     DONE = 3
 
-#from scene_quentin import Player
 from utils import Road, Protein, Car, Obstacle, Building
 
 
@@ -33,7 +29,7 @@ class SceneNolwenn(Scene):
         super().__init__(game_callback, screen)
         self._camera = Camera(self._screen)
 
-        self._finish_line = 13.1
+        self._finish_line = 13.25
         self._winner = None
         self._cam_initial_pos = None
 
@@ -61,13 +57,6 @@ class SceneNolwenn(Scene):
         self._player2 = Player(self._camera, Vector2(0, road_y_2 - 0.08))
         self._player2.set_z_value(30)
         self._add_item(self._player2)
-
-        self._arrows = ImageItem(self._camera, Vector2(0, road_y_1 - 0.08), Vector2(0.3, 0.3), image='img.png')
-        self._arrows.set_z_value(50)
-        self._wasd = ImageItem(self._camera, Vector2(0, road_y_2 - 0.08), Vector2(0.3, 0.3), image='img.png')
-        self._wasd.set_z_value(50)
-        self._add_item(self._arrows)
-        self._add_item(self._wasd)
 
         # proteins
         self._proteins1 = []
@@ -143,32 +132,24 @@ class SceneNolwenn(Scene):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
                     self._player1.set_right(True)
-                elif event.key == pygame.K_LEFT:
-                    self._player1.set_left(True)
                 elif event.key == pygame.K_UP:
                     self._player1.set_up(True)
 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT:
                     self._player1.set_right(False)
-                elif event.key == pygame.K_LEFT:
-                    self._player1.set_left(False)
                 elif event.key == pygame.K_UP:
                     self._player1.set_up(False)
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d:
                     self._player2.set_right(True)
-                elif event.key == pygame.K_a:
-                    self._player2.set_left(True)
                 elif event.key == pygame.K_w:
                     self._player2.set_up(True)
 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_d:
                     self._player2.set_right(False)
-                elif event.key == pygame.K_a:
-                    self._player2.set_left(False)
                 elif event.key == pygame.K_w:
                     self._player2.set_up(False)
 
@@ -209,7 +190,7 @@ class SceneNolwenn(Scene):
                 self._mode = GameMode.DONE
             lb = self._timer/T
             self._camera.set_pos(self._winner.pos * lb + (1-lb) * self._cam_initial_pos)
-            self._camera.set_zoom(4 * lb + self._initial_zoom * (1-lb))
+            self._camera.set_zoom(self._initial_zoom * 2.5 * lb + self._initial_zoom * (1-lb))
 
         for player, protein_list in zip([self._player1, self._player2], [self._proteins1, self._proteins2]):
             for protein in protein_list:

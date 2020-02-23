@@ -178,7 +178,7 @@ class Player(CompositeItem):
         # ----------- move ---------------
 
         if not self._attacking_object:
-            factor_speed = (2 + 7 / self._power) * 0.3
+            factor_speed = (4 + 5 / self._power) * 0.3
             if self._right and not self._left:
                 if self._animation != PlayerAnimation.RUN and self._z <= 0:
                     self._set_animation(PlayerAnimation.RUN)
@@ -199,7 +199,7 @@ class Player(CompositeItem):
 
             # ----------- jump ---------------
             if self._up and self._z <= 0:
-                factor_jump_height = 1 + 1.7 / self._power
+                factor_jump_height = (1.8 + 0.7 / self._power)
                 self._v_speed = 0.5 * factor_jump_height
                 self._set_animation(PlayerAnimation.JUMP)
                 # self._hop.play()
@@ -222,7 +222,7 @@ class Player(CompositeItem):
                 self._set_animation(PlayerAnimation.REST)
         x_ = self._speed.x * 0.01 * 1.3
         if self._z > 0:
-            x_ *= 1.4
+            x_ *= 1.6
         self.set_pos(Vector2(self.pos.x + x_, self._ground - self._z + self._height_delta))
 
         # ------------ decreasing power with time ---------------
