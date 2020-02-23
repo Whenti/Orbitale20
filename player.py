@@ -12,6 +12,7 @@ class PlayerAnimation(Enum):
     RUN = 1
     JUMP = 2
     REST = 3
+    MOVE_OBSTACLE = 4
 
 
 
@@ -84,12 +85,16 @@ class Player(CompositeItem):
         self._left = False
         self._up = False
         self._speed = Vector2(0, 0)
+        self._attacking_object = None
 
     def _compute_head_position(self):
         y = -(self._BASE_BODY_SIZE.y + self._BASE_HEAD_SIZE.y) * 0.2
         x = self._BASE_BODY_SIZE.x * 0.1
 
         return Vector2(x, y)
+
+    def stop(self):
+        self._speed = Vector2(0, 0)
 
     def _compute_leg_position(self, right):
         y = self._BASE_BODY_SIZE.y * 0.25
@@ -144,25 +149,33 @@ class Player(CompositeItem):
             self._t = 0
 
         # ----------- move ---------------
-        factor_speed = 10/self._power
-        if self._right and not self._left:
-            self._speed = Vector2(1, 0)*factor_speed
-        elif self._left and not self._right:
-            self._speed = Vector2(-1, 0)*factor_speed
+
+        if not self._attacking_object:
+            factor_speed = 10 / self._power
+            if self._right and not self._left:
+                self._speed = Vector2(1, 0) * factor_speed
+            elif self._left and not self._right:
+                self._speed = Vector2(-1, 0) * factor_speed
+            else:
+                self._speed *= 0.9
+                if self._speed.length() < 0.001:
+                    self._speed = Vector2(0, 0)
+                self._set_animation(PlayerAnimation.REST)
+
+            if self._z > 0:
+                self._v_speed -= 0.09
+
+            # ----------- jump ---------------
+            if self._up and self._z <= 0:
+                factor_jump_height = 5 / self._power
+                self._v_speed = 1.0 * factor_jump_height
+                self._set_animation(PlayerAnimation.JUMP)
+
         else:
-            self._speed *= 0.9
-            if self._speed.length() < 0.001:
-                self._speed = Vector2(0, 0)
-            self._set_animation(PlayerAnimation.REST)
-
-        if self._z > 0:
-            self._v_speed -= 0.09
-
-        # ----------- jump ---------------
-        if self._up and self._z <= 0:
-            factor_jump_height = 5/self._power
-            self._v_speed = 1.0 * factor_jump_height
-            self._set_animation(PlayerAnimation.JUMP)
+            self._attacking_object.life -= 10
+            if self._attacking_object.life < 0:
+                self._attacking_object.fly()
+                self._attacking_object = None
 
         self._z += self._v_speed * 0.005
 
@@ -217,7 +230,6 @@ class Player(CompositeItem):
         self._left_leg.set_size(leg_size)
         self._right_leg.set_size(leg_size)
 
-
         # thresholds
         muscle_level_m = 5
         muscle_level_s = 8
@@ -242,4 +254,7 @@ class Player(CompositeItem):
             self._body.load_image(bodies[new_muscle_level])
 
             self._muscle_level = new_muscle_level
+
+    def attack(self, car):
+        self._attacking_object = car
 

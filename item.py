@@ -73,12 +73,10 @@ class RectItem(Item):
         self._scene_rect = None
         self._items = []
         self._image = None
+        self._parent = None
 
     def draw(self):
-        #þ
-        self._camera.screen.blit(self._image_to_draw, self._scene_rect.topleft)
-
-    def update(self, parent: Item = None):
+        parent = self._parent
         if parent is not None:
             translation = parent.pos
             theta = parent.theta
@@ -99,6 +97,10 @@ class RectItem(Item):
         camera_pos = self._camera.pos * self._camera.size.x
         center = self._camera.size.x * zoom * (self._pos + translation) - zoom * camera_pos + 0.5 * self._camera.size
         self._scene_rect = self._image_to_draw.get_rect(center=center)
+        self._camera.screen.blit(self._image_to_draw, self._scene_rect.topleft)
+
+    def update(self, parent: Item = None):
+        self._parent = parent
 
     def set_size(self, size: Vector2):
         self._size = size
