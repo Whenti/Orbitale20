@@ -12,7 +12,14 @@ from scene import Scene, CompositeScene
 from scene_finish import SceneFinish
 from scene_start import SceneStart
 
+<<<<<<< HEAD
 from utils import Road, Protein, Car, Obstacle
+=======
+import random
+
+#from scene_quentin import Player
+from utils import Road, Protein, Car, Obstacle, Building
+>>>>>>> 5ce46f64f4a9485b73221ca0c873b1dba7a9777f
 
 
 class GameMode(Enum):
@@ -84,7 +91,9 @@ class SceneNolwenn(Scene):
 
         for car_list, road_y in zip([self._cars1, self._cars2], [road_y_1, road_y_2]):
             car_delta = -0.02
+            building_delta = -0.2
             car_list.append(Car(self._camera, Vector2(0.9, road_y + car_delta)))
+            #car_list.append(Building(self._camera, Vector2(0.9, road_y + building_delta)))
 
         for protein in self._proteins1 + self._proteins2:
             self._add_item(protein)
