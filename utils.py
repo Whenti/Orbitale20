@@ -39,15 +39,14 @@ class Protein(ImageItem):
 
 class Obstacle(ImageItem):
     def __init__(self, camera, pos):
-        obstacle_size = Vector2(0.2, 0.2)
+        obstacle_size = Vector2(0.2, 0.25)
         super().__init__(camera, pos, obstacle_size, image='obstacle.png')
         self.set_z_value(40)
 
     @property
     def rect(self):
-        size = Vector2(self.size.x * 0.05, self.size.y * 0.1)
-        pos = Vector2(self.pos.x, self.pos.y)
-        rect = (pos.x - 0.5 * size.x + 0.05, pos.y - 0.5 * size.y, size.x, size.y)
+        size = Vector2(self.size.x * 0.05, self.size.y * 0.19)
+        rect = (self.pos.x - 0.5 * size.x + 0.05, self.pos.y - 0.5 * size.y, size.x, size.y * 0.05)
         l = 1000
         return pygame.Rect(rect[0]*l, rect[1]*l, rect[2]*l, rect[3]*l)
 
@@ -78,7 +77,7 @@ class Car(ImageItem):
             self._t += 1
             delta = self._t/self._T
             self.set_rotation(-delta * 90.0)
-            self.set_pos(self._initial_pos - delta * Vector2(0.05, -0.05))
+            self.set_pos(self._initial_pos - delta * Vector2(0.05, -0.09))
 
         if self._shaking:
             self.set_pos(self._initial_pos + (random.randint(0, 2) - 1) * Vector2(0.01, 0))
@@ -121,7 +120,7 @@ class Building(ImageItem):
             self._t += 1
             delta = self._t/self._T
             self.set_rotation(-delta * 90.0)
-            self.set_pos(self._initial_pos - delta * Vector2(0.2, -0.2))
+            self.set_pos(self._initial_pos - delta * Vector2(0.0, -0.15))
 
         if self._shaking:
             self.set_pos(self._initial_pos + (random.randint(0, 2) - 1) * Vector2(0.01, 0))

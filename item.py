@@ -174,6 +174,9 @@ class TextItem(RectItem):
         self.set_text(text)
         self._scene_rect = self._image.get_rect()
 
+    def set_text_size(self, size):
+        self._font = Font('freesansbold.ttf', size)
+
     def set_text(self, text: str):
         self._text = text
         self._image = self._font.render(self._text, True, self._foreground_color, self._background_color)

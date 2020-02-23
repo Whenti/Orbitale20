@@ -4,6 +4,7 @@ import pygame
 
 from game_callback import GameCallback, SceneId
 from scene_finish import SceneFinish
+from scene_intro import SceneIntro
 from scene_nolwenn import SceneNolwenn, GameScene
 from scene_quentin import SceneQuentin
 from scene_start import SceneStart
@@ -15,7 +16,7 @@ class Game(GameCallback):
     TITLE = "PyGame Test"
     WIDTH = 1200
     RATIO = 16.0 / 9.0
-    TICK = 40
+    TICK = 80
 
     def __init__(self):
         pygame.display.set_caption(self.TITLE)
@@ -72,6 +73,8 @@ class Game(GameCallback):
             self._scene = SceneFinish(self, self._screen)
         elif self._scene_id == SceneId.FINAL:
             self._scene = GameScene(self, self._screen)
+        elif self._scene_id == SceneId.INTRO:
+            self._scene = SceneIntro(self, self._screen)
         self._scene_id = None
 
     @property

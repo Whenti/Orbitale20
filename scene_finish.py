@@ -22,7 +22,7 @@ class SceneFinish(Scene):
         self._victory_word = TextItem(self._camera,
                                        Vector2(0, 0),
                                        Vector2(self._width_funny_object, self._height_funny_object),
-                                       '! Bravo !')
+                                       'Bravo Monsieur !')
 
         self._add_item(self._victory_word)
 

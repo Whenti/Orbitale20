@@ -5,7 +5,7 @@ import pygame
 from pygame import Vector2
 
 from camera import Camera
-from game_callback import GameCallback
+from game_callback import GameCallback, SceneId
 from item import ImageItem
 from player import Player
 from scene import Scene, CompositeScene
@@ -15,7 +15,6 @@ from scene_start import SceneStart
 from utils import Road, Protein, Car, Obstacle
 import random
 
-<<<<<<< HEAD
 from utils import Road, Protein, Car, Obstacle, Building
 
 class GameMode(Enum):
@@ -33,7 +32,7 @@ class SceneNolwenn(Scene):
         super().__init__(game_callback, screen)
         self._camera = Camera(self._screen)
 
-        self._finish_line = 0.05
+        self._finish_line = 10
         self._winner = None
         self._cam_initial_pos = None
 
@@ -165,7 +164,7 @@ class SceneNolwenn(Scene):
             if self._timer >= 70:
                 self._timer = 70
             lb = self._timer/70
-            self._camera.set_pos((1-lb) * Vector2(1.5, -0.4) + 0.5 * lb * self.camera_pos())
+            self._camera.set_pos((1-lb) * Vector2(1.5, -1.1) + 0.5 * lb * self.camera_pos())
             self._camera.set_zoom(0.3 * (1-lb) + lb)
 
         if self._mode == GameMode.END:
@@ -189,7 +188,7 @@ class SceneNolwenn(Scene):
                     obstacle.set_z_value(25)
                 else:
                     obstacle.set_z_value(37)
-                if player.rect.colliderect(obstacle.rect) and player.pos.x - obstacle.pos.x < 0.028:
+                if player.rect.colliderect(obstacle.rect) and player.pos.x - obstacle.pos.x < 0.020:
                     player.set_pos(Vector2(obstacle.pos.x - obstacle.size.x * 0.1, player.pos.y))
                     player.stop()
 
@@ -240,5 +239,8 @@ class GameScene(CompositeScene):
         if self._scene_nol.winner() is not None and self._scene_end is None:
             self._scene_end = SceneFinish(self._game_callback, self._screen)
             self._add_scene(self._scene_end)
+
+        if self._scene_nol.done():
+            self._game_callback.set_scene_id(SceneId.INTRO)
 
         super().update()

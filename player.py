@@ -23,6 +23,7 @@ class Player(CompositeItem):
 
         self._height_delta = 0.0
         self._power = 1
+        self.test = False
         self._T = None
         self._t = 0
         self._BASE_BODY_SIZE = Vector2(0.06, 0.15)
@@ -96,7 +97,8 @@ class Player(CompositeItem):
         return Vector2(x, y)
 
     def stop(self):
-        self._speed = Vector2(0, 0)
+        if self._z <= 0:
+            self._speed = Vector2(0, 0)
 
     def _compute_leg_position(self, right):
         y = self._BASE_BODY_SIZE.y * 0.25
@@ -108,8 +110,8 @@ class Player(CompositeItem):
         return Vector2(x, y)
 
     def _compute_arm_position(self, right):
-        y = self._BASE_BODY_SIZE.y * (- 0.2)
-        x = self._BASE_BODY_SIZE.x * 0.3
+        y = self._BASE_BODY_SIZE.y * (-0.13 + self._power/10 * 0.1)
+        x = self._BASE_BODY_SIZE.x * (0.3 + (self._power -1)* 0.03)
         if right:
             x *= -1
         return Vector2(x, y)
@@ -119,7 +121,6 @@ class Player(CompositeItem):
             return
         if animation == self._animation:
             return
-        print(animation)
         self._t = 0
         self._animation = animation
         if self._animation == PlayerAnimation.RUN:
@@ -167,7 +168,7 @@ class Player(CompositeItem):
             if self._right and not self._left:
                 if self._animation != PlayerAnimation.RUN and self._z <= 0:
                     self._set_animation(PlayerAnimation.RUN)
-                    self._speed = Vector2(1, 0) * factor_speed
+                self._speed = Vector2(1, 0) * factor_speed
             elif self._left and not self._right and self._z <= 0:
                 if self._animation != PlayerAnimation.RUN:
                     self._set_animation(PlayerAnimation.RUN)
@@ -208,7 +209,7 @@ class Player(CompositeItem):
         self.set_pos(Vector2(self.pos.x + self._speed.x * 0.01, self._ground - self._z + self._height_delta))
 
         # ------------ decreasing power with time ---------------
-        if self._animation != PlayerAnimation.WIN:
+        if self._animation != PlayerAnimation.WIN and not self.test:
             self.loose_power()
 
         # ------------------------ arm synchronisation -----------------------
@@ -253,6 +254,11 @@ class Player(CompositeItem):
             self._left_leg.set_rotation(-self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
             self._right_leg.set_rotation(self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
 
+        self._left_leg._pos = self._compute_leg_position(False)
+        self._right_leg._pos = self._compute_leg_position(True)
+        self._right_arm._pos = self._compute_arm_position(True)
+        self._left_arm._pos = self._compute_arm_position(False)
+
         super().update()
 
     def set_winner(self):
@@ -276,11 +282,10 @@ class Player(CompositeItem):
         self._body.set_size(Vector2(body_size.x, self._BASE_BODY_SIZE.y))
 
         head_size = self._BASE_HEAD_SIZE * factor_members_size
-        #self._head.set_size(head_size)
 
-        arm_size = self._BASE_ARM_SIZE * factor_members_size
-        self._left_arm.set_size(Vector2(arm_size.x, self._BASE_ARM_SIZE.y))
-        self._right_arm.set_size(Vector2(arm_size.x, self._BASE_ARM_SIZE.y))
+        arm_size = Vector2(self._BASE_ARM_SIZE.x * factor_members_size, self._BASE_ARM_SIZE.y * factor_members_size * 0.7)
+        self._left_arm.set_size(arm_size)
+        self._right_arm.set_size(arm_size)
 
         leg_size = self._BASE_LEG_SIZE
         self._left_leg.set_size(leg_size)

@@ -58,7 +58,7 @@ class SceneStart(Scene):
             step = 1
             self._funny_object.set_pos(self._pos1 - Vector2(0, i*0.05))
 
-        elif self._t < 4*self._T:
+        elif self._t < 3.5*self._T:
             step = 0
             if i < - self._pos_start.y / 0.05:
                 self._funny_object.set_pos(self._pos_start + Vector2(0, i*0.05))

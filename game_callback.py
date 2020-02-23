@@ -10,6 +10,7 @@ class SceneId(Enum):
     START = 3
     FINISH = 4
     FINAL = 5
+    INTRO = 6
 
 
 class GameCallback:
