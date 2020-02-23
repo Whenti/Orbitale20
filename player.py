@@ -12,7 +12,7 @@ class PlayerAnimation(Enum):
     RUN = 1
     JUMP = 2
     REST = 3
-    MOVE_OBSTACLE = 4
+    MOVE_HEAVY_OBJECT = 4
 
 
 
@@ -121,8 +121,12 @@ class Player(CompositeItem):
         elif self._animation == PlayerAnimation.JUMP:
             self._max_leg_rotation = 60
             self._t = 10
+            self._T = 25
         elif self._animation == PlayerAnimation.REST:
             self._t = 5
+            self._T = 25
+        elif self._animation == PlayerAnimation.MOVE_HEAVY_OBJECT:
+            self._T = 100
 
 
     def draw(self):
@@ -153,8 +157,12 @@ class Player(CompositeItem):
         if not self._attacking_object:
             factor_speed = 10 / self._power
             if self._right and not self._left:
-                self._speed = Vector2(1, 0) * factor_speed
+                if self._animation != PlayerAnimation.RUN:
+                    self._set_animation(PlayerAnimation.RUN)
+                    self._speed = Vector2(1, 0) * factor_speed
             elif self._left and not self._right:
+                if self._animation != PlayerAnimation.RUN:
+                    self._set_animation(PlayerAnimation.RUN)
                 self._speed = Vector2(-1, 0) * factor_speed
             else:
                 self._speed *= 0.9
@@ -190,11 +198,18 @@ class Player(CompositeItem):
         # ------------ decreasing power with time ---------------
         self.loose_power()
 
+        # ------------------------ arm synchronisation -----------------------
 
-        lambda_ = self._t/self._T
+        if self._attacking_object is None:
+            lambda_ = self._t / self._T
+            self._left_arm.set_rotation(self._max_arm_rotation * math.cos(lambda_ * 2 * math.pi))
+            self._right_arm.set_rotation(-self._max_arm_rotation * math.cos(lambda_ * 2 * math.pi))
 
-        self._left_arm.set_rotation(self._max_arm_rotation * math.cos(lambda_ * 2 * math.pi))
-        self._right_arm.set_rotation(-self._max_arm_rotation * math.cos(lambda_ * 2 * math.pi))
+        else:
+            self._t = 100 - (self._attacking_object.life/self._attacking_object.max_life * 100)
+            lambda_ = self._t / self._T
+            self._left_arm.set_rotation(self._max_arm_rotation * 3 * lambda_ - 30)
+            self._right_arm.set_rotation(self._max_arm_rotation * 3 * lambda_ - 30)
 
         self._left_leg.set_rotation(-self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
         self._right_leg.set_rotation(self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
@@ -256,5 +271,7 @@ class Player(CompositeItem):
             self._muscle_level = new_muscle_level
 
     def attack(self, car):
-        self._attacking_object = car
+        if self._attacking_object is None:
+            self._attacking_object = car
+            self._set_animation(PlayerAnimation.MOVE_HEAVY_OBJECT)
 

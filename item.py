@@ -87,7 +87,6 @@ class RectItem(Item):
 
         width = int(zoom * self._size.x * self._camera.size.x)
         height = int(zoom * self._size.y * self._camera.size.y)
-        print(width)
         self._image_to_draw = pygame.transform.scale(self._image, (width, height))
 
         rotation = int(self._theta + theta) % 360

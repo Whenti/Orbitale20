@@ -57,6 +57,7 @@ class Car(ImageItem):
         super().__init__(camera, pos, car_size, image='car.png')
         self.set_z_value(40)
         self.life = 100
+        self.max_life = self.life
         self._is_flying = False
         self._t = 0
         self._T = 10
