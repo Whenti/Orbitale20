@@ -14,7 +14,7 @@ class Road(CompositeItem):
         puzzle_width = 1/3
         puzzle_height = 1/8
 
-        road_length = 10
+        road_length = 60
 
         self._puzzle_pieces = []
         self._puzzle_pieces.append('road1.png')

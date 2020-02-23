@@ -18,7 +18,7 @@ class SceneStart(Scene):
         self._camera = Camera(self._screen)
 
         self._width_funny_object = 0.3
-        self._height_funny_object = 0.3
+        self._height_funny_object = 0.5
 
         self._pos3 = Vector2(-(1+self._width_funny_object)*0.5, 0)
         self._pos2 = Vector2((1+self._width_funny_object)*0.5, 0)
@@ -28,7 +28,7 @@ class SceneStart(Scene):
         self._funny_object = ImageItem(self._camera,
                                        self._pos3,
                                        Vector2(self._width_funny_object, self._height_funny_object),
-                                       color=(0, 250, 0))
+                                       image='funny3.png')
         self._funny_object.set_z_value(100)
 
         self._current_step=3
@@ -64,13 +64,17 @@ class SceneStart(Scene):
                 self._funny_object.set_pos(self._pos_start + Vector2(0, i*0.05))
             else:
                 self._funny_object.increase_transparency()
-
         else:
+            step = 0
             self._done = True
-        # if step-self._current_step > 0:
-        #     #funny_numbers = ['start.png', 'funny1.png', 'funny2.png', 'funny3.png']
-        #     #self._funny_object.load_image[step]
-        #     self._current_step = step
+
+
+        if self._current_step - step > 0:
+             funny_numbers = ['go.png', 'funny1.png', 'funny2.png', 'funny3.png']
+             self._funny_object.load_image(funny_numbers[step])
+             self._current_step = step
+
+        print(step)
 
 
 
