@@ -1,7 +1,6 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
 import pygame
-import math
 
 from pygame.event import Event
 from pygame import Vector2
@@ -13,47 +12,62 @@ from camera import Camera
 from item import CompositeItem, Item, TextItem, ImageItem
 
 
-'''class Player(CompositeItem):
-    def __init__(self, camera: Camera, pos: Vector2):
-        super().__init__(camera, pos, Vector2(-0.2, -0.3))
-
-        self._center_item = ImageItem(camera, Vector2(0, 0), Vector2(0.1, 0.1), color=(255, 255, 0))
-        self._rotating_item = ImageItem(camera, Vector2(0, 0), Vector2(0.05, 0.05), color=(0, 255, 0))
-        self._text_item = TextItem(camera, Vector2(0, 0), Vector2(0.2, 0.2), "oui bonjour")
-        self._add_item(self._center_item)
-        self._add_item(self._rotating_item)
-        self._add_item(self._text_item)
-
-    def update(self, parent: Item = None):
-        self._rotating_item.rotate(-3)
-        rotation = self._rotating_item.theta*math.pi/180.0
-        pos = Vector2(0.10 * math.cos(rotation), 0.10 * math.sin(rotation))
-        self._rotating_item.set_pos(pos)
-        self._center_item.rotate(1)
-        super().update()'''
-
-class FunnyNumber(Scene):
-    def __init__(self, game_callback: GameCallback, screen: pygame.Surface):
-        super().__init__(game_callback, screen)
-        self._camera = Camera(self._screen)
-
 class SceneStart(Scene):
     def __init__(self, game_callback: GameCallback, screen: pygame.Surface):
         super().__init__(game_callback, screen)
         self._camera = Camera(self._screen)
 
-        self._funny_number = ImageItem(self._camera, Vector2(0.2, 0.2), Vector2(0.1, 0.1), color=(0, 0, 250))
-        self._add_item(self._rectangle)
+        self._width_funny_object = 0.3
+        self._height_funny_object = 0.3
 
-        self._TIME = 100
+        self._pos3 = Vector2(-(1+self._width_funny_object)*0.5, 0)
+        self._pos2 = Vector2((1+self._width_funny_object)*0.5, 0)
+        self._pos1 = Vector2(0, (1+self._height_funny_object)*0.5)
+        self._pos_start = Vector2(0, -(1+self._height_funny_object)*0.5)
+
+        self._funny_object = ImageItem(self._camera,
+                                       self._pos3,
+                                       Vector2(self._width_funny_object, self._height_funny_object),
+                                       color=(0, 250, 0) )
+
+        self._current_step=3
+        self._add_item(self._funny_object)
+
         self._t = 0
+        self._T = 30
+
 
     def manage_events(self, event: Event):
         pass
 
     def update(self):
         self._t += 1
-        if self._t == self._TIME:
-            self._game_callback.set_scene_id(SceneId.TEST)
-        self._funny_number.move(Vector2(0.01, 0))
+        i = self._t % self._T
+
+        if self._t < self._T:
+            step = 3
+            self._funny_object.set_pos(self._pos3 + Vector2(i*0.05, 0))
+
+        elif self._t < 2*self._T:
+            step = 2
+            self._funny_object.set_pos(self._pos2 - Vector2(i*0.05, 0))
+
+        elif self._t < 3*self._T:
+            step = 1
+            self._funny_object.set_pos(self._pos1 - Vector2(0, i*0.05))
+
+        elif self._t < 4*self._T:
+            step = 0
+            if i < - self._pos_start.y / 0.05:
+                self._funny_object.set_pos(self._pos_start + Vector2(0, i*0.05))
+            else:
+                self._funny_object.increase_transparency()
+
+        if step-self._current_step > 0:
+            #funny_numbers = ['start.png', 'funny1.png', 'funny2.png', 'funny3.png']
+            #self._funny_object.load_image[step]
+            self._current_step = step
+
+
+
         super().update()

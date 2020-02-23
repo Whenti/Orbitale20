@@ -74,6 +74,7 @@ class RectItem(Item):
         self._items = []
         self._image = None
         self._parent = None
+        self._transparency = 255
 
     def draw(self):
         parent = self._parent
@@ -96,6 +97,8 @@ class RectItem(Item):
         camera_pos = self._camera.pos * self._camera.size.x
         center = self._camera.size.x * zoom * (self._pos + translation) - zoom * camera_pos + 0.5 * self._camera.size
         self._scene_rect = self._image_to_draw.get_rect(center=center)
+        if self._transparency != 255:
+            self._image_to_draw.set_alpha(self._transparency)
         self._camera.screen.blit(self._image_to_draw, self._scene_rect.topleft)
 
     def update(self, parent: Item = None):
@@ -103,6 +106,9 @@ class RectItem(Item):
 
     def set_size(self, size: Vector2):
         self._size = size
+
+    def increase_transparency(self):
+        self._transparency -= 30
 
     @property
     def size(self):
@@ -143,6 +149,7 @@ class ImageItem(RectItem):
             self._image = pygame.image.load(os.path.join('./resources/images/', image))
             # self._image.set_colorkey((0, 0, 0))
             _image_cache[image] = self._image
+
 
 
 class TextItem(RectItem):

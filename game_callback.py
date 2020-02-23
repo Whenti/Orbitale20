@@ -7,6 +7,8 @@ class SceneId(Enum):
     TEST = 0
     NOLWENN = 1
     QUENTIN = 2
+    START = 3
+    FINISH = 4
 
 
 class GameCallback:
