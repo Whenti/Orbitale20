@@ -74,8 +74,4 @@ class SceneStart(Scene):
              self._funny_object.load_image(funny_numbers[step])
              self._current_step = step
 
-        print(step)
-
-
-
         super().update()

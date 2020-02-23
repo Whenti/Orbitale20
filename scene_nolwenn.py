@@ -39,10 +39,6 @@ class SceneNolwenn(Scene):
 
         self._mode = GameMode.START
         self._timer = 0
-        # item image background
-        self._camera_background = Camera(self._screen)
-        self._image_background = ImageItem(self._camera_background, Vector2(0, 0), Vector2(1, 1), image='background.png')
-        self._add_item(self._image_background)
 
         # defining roads y position
         road_y_1 = 0.0
@@ -185,8 +181,6 @@ class SceneNolwenn(Scene):
             if diff < 0.35:
                 diff = 0.35
             self._camera.set_zoom(0.37 / diff)
-
-        self._camera_background.set_pos(0.1 * (self._camera.pos / self._screen.get_width()))
 
     def done(self):
         return self._mode == GameMode.DONE

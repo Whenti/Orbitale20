@@ -36,6 +36,13 @@ class Protein(ImageItem):
         super().__init__(camera, pos, protein_size, image='proteins.png')
         self.set_z_value(25)
 
+    @property
+    def rect(self):
+        size = Vector2(self.size.x, self.size.y * 0.5)
+        rect = (self.pos.x - 0.5 * size.x + 0.05, self.pos.y - 0.5 * size.y, size.x, size.y * 0.05)
+        l = 1000
+        return pygame.Rect(rect[0]*l, rect[1]*l, rect[2]*l, rect[3]*l)
+
 
 class Obstacle(ImageItem):
     def __init__(self, camera, pos):
