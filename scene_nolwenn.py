@@ -1,4 +1,5 @@
 from asyncio import Event
+from enum import Enum
 
 import pygame
 from pygame import Vector2
@@ -7,22 +8,33 @@ from camera import Camera
 from game_callback import GameCallback
 from item import ImageItem, CompositeItem
 from player import Player
-from scene import Scene
+from scene import Scene, CompositeScene
+from scene_finish import SceneFinish
+from scene_start import SceneStart
 
-import random
-
-#from scene_quentin import Player
 from utils import Road, Protein, Car, Obstacle
+
+
+class GameMode(Enum):
+    START = 0
+    GAME = 1
+    END = 2
+    DONE = 3
 
 
 class SceneNolwenn(Scene):
     def __init__(self,  game_callback: GameCallback, screen: pygame.Surface):
-        #copy from SceneTest
         super().__init__(game_callback, screen)
         self._camera = Camera(self._screen)
 
+        self._finish_line = 0.05
+        self._winner = None
+        self._cam_initial_pos = None
+
+        self._mode = GameMode.START
+        self._timer = 0
         # item image background
-        self._camera_background = Camera(self._screen);
+        self._camera_background = Camera(self._screen)
         self._image_background = ImageItem(self._camera_background, Vector2(0, 0), Vector2(1, 1), image='background.png')
         self._add_item(self._image_background)
 
@@ -82,6 +94,7 @@ class SceneNolwenn(Scene):
             self._add_item(car)
 
     def manage_events(self, event: Event):
+        if self._mode == GameMode.GAME:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
                     self._player1.set_right(True)
@@ -114,9 +127,13 @@ class SceneNolwenn(Scene):
                 elif event.key == pygame.K_w:
                     self._player2.set_up(False)
 
+
+    def camera_pos(self):
+        return Vector2(0.5 * self._player1.pos.x + 0.5 * self._player2.pos.x + 0.1, 0)
+
+
     def _update_cameras(self):
-        camera_pos = Vector2(0.5 * self._player1.pos.x + 0.5 * self._player2.pos.x + 0.1/self._camera.zoom, 0)
-        self._camera.set_pos(camera_pos)
+        self._camera.set_pos(self.camera_pos())
 
         referent_player = self._player2 if self._player2.pos.x > self._player1.pos.x else self._player2
         diff = abs((self._camera.pos - referent_player.pos).length())
@@ -129,10 +146,28 @@ class SceneNolwenn(Scene):
 
         self._camera_background.set_pos(0.1 * (self._camera.pos / self._screen.get_width()))
 
+    def done(self):
+        return self._mode == GameMode.DONE
 
     def update(self):
         self._update_cameras()
         super().update()
+        self._timer += 1
+        if self._mode == GameMode.START:
+            if self._timer >= 70:
+                self._timer = 70
+            lb = self._timer/70
+            self._camera.set_pos((1-lb) * Vector2(1.5, -0.4) + 0.5 * lb * self.camera_pos())
+            self._camera.set_zoom(0.3 * (1-lb) + lb)
+
+        if self._mode == GameMode.END:
+            T = 70
+            if self._timer >= T:
+                self._mode = GameMode.DONE
+            lb = self._timer/T
+            self._camera.set_pos(self._winner.pos * lb + (1-lb) * self._cam_initial_pos)
+            self._camera.set_zoom(4 * lb + self._initial_zoom * (1-lb))
+
         for player, protein_list in zip([self._player1, self._player2], [self._proteins1, self._proteins2]):
             for protein in protein_list:
                 if player.rect.colliderect(protein.rect):
@@ -157,3 +192,45 @@ class SceneNolwenn(Scene):
                     player.set_pos(Vector2(car.pos.x - car.size.x / 3, player.pos.y))
                     player.stop()
 
+        if self._player1.pos.x >= self._finish_line:
+            self._winner = self._player1
+
+        elif self._player2.pos.x >= self._finish_line:
+            self._winner = self._player2
+
+        if self._winner is not None and self._mode == GameMode.GAME:
+            self._mode = GameMode.END
+            self._timer = 0
+            self._cam_initial_pos = self._camera.pos
+            self._initial_zoom = self._camera.zoom
+            self._winner.set_winner()
+
+    def start_game(self):
+        self._mode = GameMode.GAME
+
+    def winner(self):
+        return self._winner
+
+
+class GameScene(CompositeScene):
+
+    def __init__(self, game_callback: GameCallback, screen: pygame.Surface):
+        super().__init__(game_callback, screen)
+        self._scene_nol = SceneNolwenn(game_callback, screen)
+        self._scene_start = SceneStart(game_callback, screen)
+        self._scene_end = None
+
+        self._add_scene(self._scene_nol)
+        self._add_scene(self._scene_start)
+
+    def update(self):
+        if self._scene_start is not None and self._scene_start._done:
+            self._remove_scene(self._scene_start)
+            self._scene_start = None
+            self._scene_nol.start_game()
+
+        if self._scene_nol.winner() is not None and self._scene_end is None:
+            self._scene_end = SceneFinish(self._game_callback, self._screen)
+            self._add_scene(self._scene_end)
+
+        super().update()

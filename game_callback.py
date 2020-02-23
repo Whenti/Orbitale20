@@ -9,6 +9,7 @@ class SceneId(Enum):
     QUENTIN = 2
     START = 3
     FINISH = 4
+    FINAL = 5
 
 
 class GameCallback:

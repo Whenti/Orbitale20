@@ -28,13 +28,15 @@ class SceneStart(Scene):
         self._funny_object = ImageItem(self._camera,
                                        self._pos3,
                                        Vector2(self._width_funny_object, self._height_funny_object),
-                                       color=(0, 250, 0) )
+                                       color=(0, 250, 0))
+        self._funny_object.set_z_value(100)
 
         self._current_step=3
         self._add_item(self._funny_object)
 
         self._t = 0
         self._T = 30
+        self._done = False
 
 
     def manage_events(self, event: Event):
@@ -63,10 +65,12 @@ class SceneStart(Scene):
             else:
                 self._funny_object.increase_transparency()
 
-        if step-self._current_step > 0:
-            #funny_numbers = ['start.png', 'funny1.png', 'funny2.png', 'funny3.png']
-            #self._funny_object.load_image[step]
-            self._current_step = step
+        else:
+            self._done = True
+        # if step-self._current_step > 0:
+        #     #funny_numbers = ['start.png', 'funny1.png', 'funny2.png', 'funny3.png']
+        #     #self._funny_object.load_image[step]
+        #     self._current_step = step
 
 
 

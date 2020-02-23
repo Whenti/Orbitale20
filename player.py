@@ -13,6 +13,7 @@ class PlayerAnimation(Enum):
     JUMP = 2
     REST = 3
     MOVE_HEAVY_OBJECT = 4
+    WIN = 5
 
 
 
@@ -114,6 +115,8 @@ class Player(CompositeItem):
         return Vector2(x, y)
 
     def _set_animation(self, animation):
+        if self._animation == PlayerAnimation.WIN:
+            return
         if animation == self._animation:
             return
         print(animation)
@@ -131,7 +134,9 @@ class Player(CompositeItem):
             self._T = 8
         elif self._animation == PlayerAnimation.MOVE_HEAVY_OBJECT:
             self._T = 100
-
+        elif self._animation == PlayerAnimation.WIN:
+            self._max_leg_rotation = 40
+            self._T = 10
 
     def draw(self):
         for item in [self._left_leg, self._left_arm, self._body, self._head, self._right_leg, self._right_arm]:
@@ -203,7 +208,8 @@ class Player(CompositeItem):
         self.set_pos(Vector2(self.pos.x + self._speed.x * 0.01, self._ground - self._z + self._height_delta))
 
         # ------------ decreasing power with time ---------------
-        self.loose_power()
+        if self._animation != PlayerAnimation.WIN:
+            self.loose_power()
 
         # ------------------------ arm synchronisation -----------------------
 
@@ -235,11 +241,23 @@ class Player(CompositeItem):
                 self._right_arm.set_rotation(self._max_arm_rotation * 3 * 2 * (lambda_ - 0.5) - 30)
 
         elif self._animation == PlayerAnimation.JUMP:
-                self._left_arm.set_rotation(90)
-                self._right_arm.set_rotation(-90)
-                self._left_leg.set_rotation(-90)
-                self._right_leg.set_rotation(90)
+            self._left_arm.set_rotation(90)
+            self._right_arm.set_rotation(-90)
+            self._left_leg.set_rotation(-90)
+            self._right_leg.set_rotation(90)
+
+        elif self._animation == PlayerAnimation.WIN:
+            lambda_ = self._t / self._T
+            self._left_arm.set_rotation(140)
+            self._right_arm.set_rotation(140)
+            self._left_leg.set_rotation(-self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
+            self._right_leg.set_rotation(self._max_leg_rotation * math.cos(lambda_ * 2 * math.pi))
+
         super().update()
+
+    def set_winner(self):
+        self._animation = PlayerAnimation.WIN
+        self._power = 10
 
     def set_right(self, right):
         self._right = right

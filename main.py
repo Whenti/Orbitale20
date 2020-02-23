@@ -4,7 +4,7 @@ import pygame
 
 from game_callback import GameCallback, SceneId
 from scene_finish import SceneFinish
-from scene_nolwenn import SceneNolwenn
+from scene_nolwenn import SceneNolwenn, GameScene
 from scene_quentin import SceneQuentin
 from scene_start import SceneStart
 from scene_test import SceneTest
@@ -23,7 +23,7 @@ class Game(GameCallback):
         self._screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         self._scene = None
         self._scene_id = None
-        self.set_scene_id(SceneId.FINISH)
+        self.set_scene_id(SceneId.FINAL)
 
     def loop(self):
         while self._run:
@@ -70,6 +70,8 @@ class Game(GameCallback):
             self._scene = SceneStart(self, self._screen)
         elif self._scene_id == SceneId.FINISH:
             self._scene = SceneFinish(self, self._screen)
+        elif self._scene_id == SceneId.FINAL:
+            self._scene = GameScene(self, self._screen)
         self._scene_id = None
 
     @property
