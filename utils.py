@@ -29,6 +29,12 @@ class Road(CompositeItem):
                                       Vector2(puzzle_width * 1.01, puzzle_height * 1.01),
                                       image=self._puzzle_pieces[rnd]) )
 
+        self._add_item(ImageItem(self._camera,
+                                 Vector2((-(1 - puzzle_width) / 2) + road_length * puzzle_width, 0),
+                                 Vector2(puzzle_width * 1.01, puzzle_height * 1.01),
+                                 image='roadFinish.png'))
+
+
 
 class Protein(ImageItem):
     def __init__(self, camera, pos):

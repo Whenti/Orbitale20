@@ -33,7 +33,7 @@ class SceneNolwenn(Scene):
         super().__init__(game_callback, screen)
         self._camera = Camera(self._screen)
 
-        self._finish_line = 13.3
+        self._finish_line = 13.1
         self._winner = None
         self._cam_initial_pos = None
 
