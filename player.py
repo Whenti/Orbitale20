@@ -205,8 +205,10 @@ class Player(CompositeItem):
                 self._set_animation(PlayerAnimation.RUN)
             else:
                 self._set_animation(PlayerAnimation.REST)
-
-        self.set_pos(Vector2(self.pos.x + self._speed.x * 0.01, self._ground - self._z + self._height_delta))
+        x_ = self._speed.x * 0.01
+        if self._z > 0:
+            x_ *= 1.2
+        self.set_pos(Vector2(self.pos.x + x_, self._ground - self._z + self._height_delta))
 
         # ------------ decreasing power with time ---------------
         if self._animation != PlayerAnimation.WIN and not self.test:
@@ -292,7 +294,7 @@ class Player(CompositeItem):
         self._right_leg.set_size(leg_size)
 
         # thresholds
-        muscle_level_m = 5
+        muscle_level_m = 3
         muscle_level_s = 8
 
         # muscle level - update images

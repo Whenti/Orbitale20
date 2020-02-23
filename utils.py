@@ -14,7 +14,7 @@ class Road(CompositeItem):
         puzzle_width = 1/3
         puzzle_height = 1/8
 
-        road_length = 60
+        road_length = 40
 
         self._puzzle_pieces = []
         self._puzzle_pieces.append('road1.png')
@@ -32,7 +32,7 @@ class Road(CompositeItem):
 
 class Protein(ImageItem):
     def __init__(self, camera, pos):
-        protein_size = Vector2(0.2, 0.27)
+        protein_size = Vector2(0.025, 0.05)
         super().__init__(camera, pos, protein_size, image='proteins.png')
         self.set_z_value(25)
 
@@ -64,7 +64,7 @@ class Car(ImageItem):
         super().__init__(camera, pos, car_size, image='car.png')
         self.set_z_value(40)
         self._shaking = False
-        self.life = 100
+        self.life = 150
         self.max_life = self.life
         self._is_flying = False
         self._t = 0
@@ -101,6 +101,48 @@ class Car(ImageItem):
         else:
             return pygame.Rect(0, 0, 0, 0)
 
+class Rock(ImageItem):
+    def __init__(self, camera, pos):
+        car_size = Vector2(0.3, 0.3)
+        super().__init__(camera, pos, car_size, image='rock.png')
+        self.set_z_value(40)
+        self._shaking = False
+        self.life = 50
+        self.max_life = self.life
+        self._is_flying = False
+        self._t = 0
+        self._T = 10
+        self._initial_pos = pos
+
+    def fly(self):
+        self._is_flying = True
+        self._shaking = False
+
+    def shaking_status(self, shake):
+        self._shaking = shake
+
+
+    def update(self, parent=None):
+        if self._is_flying and self._t < self._T:
+            self._t += 1
+            delta = self._t/self._T
+            self.set_rotation(-delta * 90.0)
+            self.set_pos(self._initial_pos - delta * Vector2(0.05, -0.09))
+
+        if self._shaking:
+            self.set_pos(self._initial_pos + (random.randint(0, 2) - 1) * Vector2(0.01, 0))
+
+        super().update(parent)
+
+    @property
+    def rect(self):
+        if not self._is_flying:
+            size = Vector2(self.size.x * 0.3, self.size.y)
+            rect = (self.pos.x - 0.5 * size.x, self.pos.y - 0.5 * size.y, size.x, size.y)
+            l = 1000
+            return pygame.Rect(rect[0]*l, rect[1]*l, rect[2]*l, rect[3]*l)
+        else:
+            return pygame.Rect(0, 0, 0, 0)
 
 class Building(ImageItem):
     def __init__(self, camera, pos):
@@ -108,7 +150,7 @@ class Building(ImageItem):
         super().__init__(camera, pos, car_size, image='building.png')
         self.set_z_value(40)
         self._shaking = False
-        self.life = 300
+        self.life = 350
         self.max_life = self.life
         self._is_flying = False
         self._t = 0
