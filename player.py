@@ -140,7 +140,7 @@ class Player(CompositeItem):
             self._T = 10
 
     def draw(self):
-        for item in [self._left_leg, self._left_arm, self._body, self._head, self._right_leg, self._right_arm]:
+        for item in [self._left_arm, self._left_leg,  self._body, self._head, self._right_leg, self._right_arm]:
             item.draw()
 
     def gain_power(self):

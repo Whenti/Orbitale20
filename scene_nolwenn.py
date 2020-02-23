@@ -17,6 +17,7 @@ import random
 
 from utils import Road, Protein, Car, Obstacle, Building
 
+
 class GameMode(Enum):
     START = 0
     GAME = 1
@@ -32,7 +33,7 @@ class SceneNolwenn(Scene):
         super().__init__(game_callback, screen)
         self._camera = Camera(self._screen)
 
-        self._finish_line = 10
+        self._finish_line = 50
         self._winner = None
         self._cam_initial_pos = None
 
@@ -80,18 +81,28 @@ class SceneNolwenn(Scene):
         # setting the road for both player
         for protein_list, road_y in zip([self._proteins1, self._proteins2], [road_y_1, road_y_2]):
             prot_delta = -0.02
-            protein_list.append(Protein(self._camera, Vector2(0, road_y + prot_delta)))
             protein_list.append(Protein(self._camera, Vector2(0.8, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(1, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(1.2, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(1.4, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(6.5, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(7, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(8, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(8.3, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(12, road_y + prot_delta)))
+
 
         for obstacle_list, road_y in zip([self._obstacles1, self._obstacles2], [road_y_1, road_y_2]):
             obstacle_delta = -0.01
-            obstacle_list.append(Obstacle(self._camera, Vector2(0.3, road_y + obstacle_delta)))
+            obstacle_list.append(Obstacle(self._camera, Vector2(5, road_y + obstacle_delta)))
+            obstacle_list.append(Obstacle(self._camera, Vector2(7.5, road_y + obstacle_delta)))
 
         for car_list, road_y in zip([self._cars1, self._cars2], [road_y_1, road_y_2]):
             car_delta = -0.02
             building_delta = -0.2
-            car_list.append(Car(self._camera, Vector2(0.9, road_y + car_delta)))
-            #car_list.append(Building(self._camera, Vector2(0.9, road_y + building_delta)))
+            car_list.append(Car(self._camera, Vector2(9, road_y + car_delta)))
+            car_list.append(Car(self._camera, Vector2(10, road_y + car_delta)))
+            car_list.append(Building(self._camera, Vector2(12.5, road_y + building_delta)))
 
         for protein in self._proteins1 + self._proteins2:
             self._add_item(protein)
