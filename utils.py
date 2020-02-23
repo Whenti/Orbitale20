@@ -12,7 +12,7 @@ class Road(CompositeItem):
         super().__init__(camera, pos, Vector2(-0.2, -0.3))
 
         puzzle_width = 1/3
-        puzzle_height = 1/20
+        puzzle_height = 1/8
 
         road_length = 10
 
@@ -32,23 +32,23 @@ class Road(CompositeItem):
 
 class Protein(ImageItem):
     def __init__(self, camera, pos):
-        protein_size = Vector2(0.05, 0.05)
-        super().__init__(camera, pos, protein_size, color=(50, 50, 50))
+        protein_size = Vector2(0.2, 0.27)
+        super().__init__(camera, pos, protein_size, image='proteins.png')
         self.set_z_value(25)
 
 
 class Obstacle(ImageItem):
     def __init__(self, camera, pos):
-        obstacle_size = Vector2(0.05, 0.05)
-        super().__init__(camera, pos, obstacle_size, color=(0, 50, 0))
+        obstacle_size = Vector2(0.5, 0.5)
+        super().__init__(camera, pos, obstacle_size, image='obstacle.png')
         self.set_z_value(27)
 
 
 class Car(ImageItem):
     def __init__(self, camera, pos):
-        car_size = Vector2(0.10, 0.10)
-        super().__init__(camera, pos, car_size, color=(0, 50, 0))
-        self.set_z_value(27)
+        car_size = Vector2(0.3, 0.3)
+        super().__init__(camera, pos, car_size, image='car.png')
+        self.set_z_value(40)
         self.life = 100
         self._is_flying = False
         self._t = 0
@@ -62,7 +62,7 @@ class Car(ImageItem):
         if self._is_flying and self._t < self._T:
             self._t += 1
             delta = self._t/self._T
-            self.set_rotation(delta * 90.0)
+            self.set_rotation(-delta * 90.0)
             self.set_pos(self._initial_pos - delta * Vector2(0.05, -0.05))
         super().update(parent)
 

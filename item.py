@@ -72,6 +72,7 @@ class RectItem(Item):
         self._image_to_draw = None
         self._scene_rect = None
         self._items = []
+        self._image = None
         self._parent = None
 
     def draw(self):
@@ -84,12 +85,10 @@ class RectItem(Item):
             theta = 0.0
         zoom = self._camera.zoom
 
-        if zoom != 1.0:
-            width = int(zoom * self._image.get_width())
-            height = int(zoom * self._image.get_height())
-            self._image_to_draw = pygame.transform.scale(self._image, (width, height))
-        else:
-            self._image_to_draw = self._image
+        width = int(zoom * self._size.x * self._camera.size.x)
+        height = int(zoom * self._size.y * self._camera.size.y)
+        print(width)
+        self._image_to_draw = pygame.transform.scale(self._image, (width, height))
 
         rotation = int(self._theta + theta) % 360
         if rotation:
@@ -102,6 +101,9 @@ class RectItem(Item):
 
     def update(self, parent: Item = None):
         self._parent = parent
+
+    def set_size(self, size: Vector2):
+        self._size = size
 
     @property
     def size(self):
@@ -123,7 +125,7 @@ class ImageItem(RectItem):
                  color: Tuple[int, int, int] = None,
                  image: str = None):
         assert not (image is None and color is None)
-
+        self._img = image
         super().__init__(camera, pos, size, theta)
         if image is not None:
             self.load_image(image)
@@ -140,7 +142,6 @@ class ImageItem(RectItem):
             self._image = _image_cache[image]
         else:
             self._image = pygame.image.load(os.path.join('./resources/images/', image))
-            self._image = pygame.transform.scale(self._image, real_size)
             # self._image.set_colorkey((0, 0, 0))
             _image_cache[image] = self._image
 

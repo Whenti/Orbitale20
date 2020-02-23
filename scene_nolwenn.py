@@ -6,11 +6,13 @@ from pygame import Vector2
 from camera import Camera
 from game_callback import GameCallback
 from item import ImageItem, CompositeItem
+from player import Player
 from scene import Scene
 
 import random
 
 #from scene_quentin import Player
+from utils import Road, Protein, Car, Obstacle
 
 
 class SceneNolwenn(Scene):
@@ -21,7 +23,7 @@ class SceneNolwenn(Scene):
 
         # item image background
         self._camera_background = Camera(self._screen);
-        self._image_background = ImageItem(self._camera_background, Vector2(0, 0), Vector2(1, 9/16), image='background.png')
+        self._image_background = ImageItem(self._camera_background, Vector2(0, 0), Vector2(1, 1), image='background.png')
         self._add_item(self._image_background)
 
         # defining roads y position
@@ -38,11 +40,11 @@ class SceneNolwenn(Scene):
         self._add_item(self._road2)
 
         # roads
-        self._player1 = Player(self._camera, Vector2(0, road_y_1 - 0.1))
+        self._player1 = Player(self._camera, Vector2(0, road_y_1 - 0.08))
         self._player1.set_z_value(30)
         self._add_item(self._player1)
 
-        self._player2 = Player(self._camera, Vector2(0, road_y_2 - 0.1))
+        self._player2 = Player(self._camera, Vector2(0, road_y_2 - 0.08))
         self._player2.set_z_value(30)
         self._add_item(self._player2)
 
@@ -50,16 +52,34 @@ class SceneNolwenn(Scene):
         self._proteins1 = []
         self._proteins2 = []
 
+        # obstacles
+        self._obstacles1 = []
+        self._obstacles2 = []
+
+        # cars
+        self._cars1 = []
+        self._cars2 = []
+
         # setting the road for both player
-        prot_delta = -0.02
         for protein_list, road_y in zip([self._proteins1, self._proteins2], [road_y_1, road_y_2]):
+            prot_delta = -0.02
             protein_list.append(Protein(self._camera, Vector2(0, road_y + prot_delta)))
             protein_list.append(Protein(self._camera, Vector2(0.3, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(0.7, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(1, road_y + prot_delta)))
+
+        for obstacle_list, road_y in zip([self._obstacles1, self._obstacles2], [road_y_1, road_y_2]):
+            obstacle_delta = -0.02
+            obstacle_list.append(Obstacle(self._camera, Vector2(0.8, road_y + obstacle_delta)))
+
+        for car_list, road_y in zip([self._cars1, self._cars2], [road_y_1, road_y_2]):
+            car_delta = -0.02
+            car_list.append(Car(self._camera, Vector2(0.5, road_y + car_delta)))
 
         for protein in self._proteins1 + self._proteins2:
             self._add_item(protein)
+        for obstacle in self._obstacles1 + self._obstacles2:
+            self._add_item(obstacle)
+        for car in self._cars1 + self._cars2:
+            self._add_item(car)
 
     def manage_events(self, event: Event):
             if event.type == pygame.KEYDOWN:
@@ -92,12 +112,23 @@ class SceneNolwenn(Scene):
     def update(self):
         self._update_cameras()
         super().update()
-        for protein in self._proteins1:
-            if self._player1.rect.colliderect(protein.rect):
-                self._remove_item(protein)
-                self._proteins1.remove(protein)
+        for player, protein_list in zip([self._player1, self._player2], [self._proteins1, self._proteins2]):
+            for protein in protein_list:
+                if player.rect.colliderect(protein.rect):
+                    self._remove_item(protein)
+                    protein_list.remove(protein)
+                    player.gain_power()
 
-        for protein in self._proteins2:
-            if self._player2.rect.colliderect(protein.rect):
-                self._remove_item(protein)
-                self._proteins2.remove(protein)
+        for player, obstacle_list in zip([self._player1, self._player2], [self._obstacles1, self._obstacles2]):
+            for obstacle in obstacle_list:
+                if player.rect.colliderect(obstacle.rect):
+                    player.set_pos(Vector2(obstacle.pos.x - obstacle.size.x / 1.3, player.pos.y))
+                    player.stop()
+
+        for player, car_list in zip([self._player1, self._player2], [self._cars1, self._cars2]):
+            for car in car_list:
+                if player.rect.colliderect(car.rect):
+                    player.attack(car)
+                    player.set_pos(Vector2(car.pos.x - car.size.x / 1.3, player.pos.y))
+                    player.stop()
+
