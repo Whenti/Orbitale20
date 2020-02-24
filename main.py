@@ -15,9 +15,9 @@ import os
 class Game(GameCallback):
 
     TITLE = "PyGame Test"
-    WIDTH = 1700
+    WIDTH = 1200
     RATIO = 16.0 / 9.0
-    TICK = 40
+    TICK = 10
 
     def __init__(self):
         pygame.display.set_caption(self.TITLE)

@@ -20,8 +20,8 @@ class PlayerAnimation(Enum):
 
 
 class Player(CompositeItem):
-    def __init__(self, camera: Camera, pos: Vector2):
-        super().__init__(camera, pos, Vector2(0.15, 0.15))
+    def __init__(self, camera: Camera, pos: Vector2, plus_z_value=0.0):
+        super().__init__(camera, pos, Vector2(0.15, 0.15), plus_z_value=plus_z_value)
 
         # self._hop = pygame.mixer.Sound('./resources/sounds/hop.wav')
         # self._burg = pygame.mixer.Sound('./resources/sounds/burg.wav')
@@ -146,7 +146,7 @@ class Player(CompositeItem):
 
     def draw(self):
         for item in [self._left_arm, self._left_leg,  self._body, self._head, self._right_leg, self._right_arm]:
-            item.draw(self)
+            item.draw()
 
     def gain_power(self):
         rd = random.randint(0, 20)

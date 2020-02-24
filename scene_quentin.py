@@ -27,7 +27,7 @@ from scene import Scene
 import random
 
 from player import Player
-from utils import Road, Protein, Obstacle, Car
+from utils import Protein, Obstacle, Car
 
 
 class SceneQuentin(Scene):

@@ -4,48 +4,50 @@ import pygame
 from pygame import Vector2
 
 from camera import Camera
-from item import CompositeItem, ImageItem
+from item import ImageItem
 
 
-class Road(CompositeItem):
-    def __init__(self, camera: Camera, pos: Vector2, image_keyboard: str):
-        super().__init__(camera, pos, Vector2(-0.2, -0.3))
+def construct_roads(camera: Camera, pos: Vector2, image_keyboard: str, plus_z_value):
+    puzzle_width = 1/3
+    puzzle_height = 1/8
 
-        puzzle_width = 1/3
-        puzzle_height = 1/8
+    road_length = 40
 
-        road_length = 40
+    puzzle_pieces = []
+    items = []
+    puzzle_pieces.append('road.png')
 
-        self._puzzle_pieces = []
-        self._puzzle_pieces.append('road.png')
-        #self._puzzle_pieces_append('xxx.png')
+    c = +0.2
+    items.append(ImageItem(camera,
+                           Vector2((-(1 - puzzle_width) / 2)+c, 0) + pos,
+                           Vector2(puzzle_width * 1.01, puzzle_height * 1.01),
+                           image=image_keyboard,
+                           plus_z_value=plus_z_value))
 
-        c = +0.2
+    #affiche la route
+    for i in range(1, road_length):
+        rnd = random.randint(0, len(puzzle_pieces)-1)
+        items.append(ImageItem(camera,
+                               Vector2((-(1-puzzle_width)/2)+ i * puzzle_width + c, 0) + pos,
+                               Vector2(puzzle_width * 1.01, puzzle_height * 1.01),
+                               image=puzzle_pieces[rnd],
+                               plus_z_value=plus_z_value))
 
-        self._add_item(ImageItem(self._camera,
-                                 Vector2((-(1 - puzzle_width) / 2)+c, 0),
-                                 Vector2(puzzle_width * 1.01, puzzle_height * 1.01),
-                                 image=image_keyboard))
+    items.append(ImageItem(camera,
+                           Vector2((-(1 - puzzle_width) / 2) + road_length * puzzle_width + c, 0) + pos,
+                           Vector2(puzzle_width * 1.01, puzzle_height * 1.01),
+                           image='roadFinish.png',
+                           plus_z_value=plus_z_value))
 
-        #affiche la route
-        for i in range(1, road_length):
-            rnd = random.randint(0, len(self._puzzle_pieces)-1)
-            self._add_item(ImageItem(self._camera,
-                                      Vector2( (-(1-puzzle_width)/2)+ i * puzzle_width + c, 0),
-                                      Vector2(puzzle_width * 1.01, puzzle_height * 1.01),
-                                      image=self._puzzle_pieces[rnd]) )
-
-        self._add_item(ImageItem(self._camera,
-                                 Vector2((-(1 - puzzle_width) / 2) + road_length * puzzle_width + c, 0),
-                                 Vector2(puzzle_width * 1.01, puzzle_height * 1.01),
-                                 image='roadFinish.png'))
-
+    for item in items:
+        item.set_z_value(20)
+    return items
 
 
 class Protein(ImageItem):
-    def __init__(self, camera, pos):
+    def __init__(self, camera, pos, pzv):
         protein_size = Vector2(0.04, 0.07)
-        super().__init__(camera, pos, protein_size, image='proteins.png')
+        super().__init__(camera, pos, protein_size, image='proteins.png', plus_z_value=pzv)
         self.set_z_value(25)
 
     @property
@@ -57,9 +59,9 @@ class Protein(ImageItem):
 
 
 class Obstacle(ImageItem):
-    def __init__(self, camera, pos):
+    def __init__(self, camera, pos, pzv):
         obstacle_size = Vector2(0.2, 0.25)
-        super().__init__(camera, pos, obstacle_size, image='obstacle.png')
+        super().__init__(camera, pos, obstacle_size, image='obstacle.png', plus_z_value=pzv)
         self.set_z_value(40)
 
     @property
@@ -71,9 +73,9 @@ class Obstacle(ImageItem):
 
 
 class Car(ImageItem):
-    def __init__(self, camera, pos):
+    def __init__(self, camera, pos, pzv):
         car_size = Vector2(0.3, 0.3)
-        super().__init__(camera, pos, car_size, image='car.png')
+        super().__init__(camera, pos, car_size, image='car.png', plus_z_value=pzv)
         self.set_z_value(40)
         self._shaking = False
         self.life = 150
@@ -89,7 +91,6 @@ class Car(ImageItem):
 
     def shaking_status(self, shake):
         self._shaking = shake
-
 
     def update(self, parent=None):
         if self._is_flying and self._t < self._T:
@@ -114,9 +115,9 @@ class Car(ImageItem):
             return pygame.Rect(0, 0, 0, 0)
 
 class Rock(ImageItem):
-    def __init__(self, camera, pos):
+    def __init__(self, camera, pos, pzv):
         car_size = Vector2(0.3, 0.3)
-        super().__init__(camera, pos, car_size, image='rock.png')
+        super().__init__(camera, pos, car_size, image='rock.png', plus_z_value=pzv)
         self.set_z_value(40)
         self._shaking = False
         self.life = 50
@@ -157,9 +158,9 @@ class Rock(ImageItem):
             return pygame.Rect(0, 0, 0, 0)
 
 class Building(ImageItem):
-    def __init__(self, camera, pos):
+    def __init__(self, camera, pos, pzv):
         car_size = Vector2(0.35, 1)
-        super().__init__(camera, pos, car_size, image='building.png')
+        super().__init__(camera, pos, car_size, image='building.png', plus_z_value=pzv)
         self.set_z_value(40)
         self._shaking = False
         self.life = 350

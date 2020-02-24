@@ -11,15 +11,18 @@ from pygame import Rect, Surface
 from camera import Camera
 
 _image_cache = {}
+_transformed_image_cache = {}
 
 
 class Item:
 
-    def __init__(self, camera: Camera, pos: Vector2, theta: float = 0.0):
+    def __init__(self, camera: Camera, pos: Vector2, theta: float = 0.0, plus_z_value=0.0):
         self._camera = camera
         self._pos = pos
         self._theta = theta
         self._z_value = 0.0
+        self._recompute_rot = False
+        self._plus_z_value = plus_z_value
 
     def draw(self):
         raise NotImplementedError
@@ -38,6 +41,7 @@ class Item:
 
     def set_rotation(self, theta: float):
         self._theta = theta
+        self._recompute_rot = True
 
     def rotate(self, dtheta: float):
         self._theta += dtheta
@@ -62,12 +66,12 @@ class Item:
 
     @property
     def z_value(self) -> float:
-        return self._z_value
+        return self._z_value + self._plus_z_value
 
 
 class RectItem(Item):
-    def __init__(self, camera: Camera, pos: Vector2, size: Vector2, theta: float = 0.0):
-        super().__init__(camera, pos, theta)
+    def __init__(self, camera: Camera, pos: Vector2, size: Vector2, theta: float = 0.0, plus_z_value=0.0):
+        super().__init__(camera, pos, theta, plus_z_value=plus_z_value)
         self._size = size
         self._image_to_draw = None
         self._scene_rect = None
@@ -76,9 +80,9 @@ class RectItem(Item):
         self._parent = None
         self._transparency = 255
 
-    def draw(self, force = False):
+    def draw(self):
         parent = self._parent
-        if parent is not None and not force:
+        if parent is None:
             diff_cam = (self._camera.pos.x - self.pos.x)
             if diff_cam > 0.8/self._camera.zoom:
                 return
@@ -92,17 +96,29 @@ class RectItem(Item):
 
         width = int(zoom * self._size.x * self._camera.size.x)
         height = int(zoom * self._size.y * self._camera.size.y)
-        self._image_to_draw = pygame.transform.scale(self._image, (width, height))
-
         rotation = int(self._theta + theta) % 360
-        if rotation:
+        global _transformed_image_cache
+
+        if (not self._recompute_rot and self._image in _transformed_image_cache and
+                _transformed_image_cache[self._image][0] == (width, height, rotation)):
+            self._image_to_draw = _transformed_image_cache[self._image][1]
+        elif (self._recompute_rot and self._image_to_draw in _transformed_image_cache and
+                _transformed_image_cache[self._image][0] == (width, height)):
+            self._image_to_draw = _transformed_image_cache[self._image][1]
             self._image_to_draw = pygame.transform.rotate(self._image_to_draw, rotation)
+
+        else:
+            self._image_to_draw = pygame.transform.scale(self._image, (width, height))
+            if self._recompute_rot:
+                _transformed_image_cache[self._image] = ((width, height), self._image_to_draw)
+
+            self._image_to_draw = pygame.transform.rotate(self._image_to_draw, rotation)
+            if not self._recompute_rot:
+                _transformed_image_cache[self._image] = ((width, height, rotation), self._image_to_draw)
 
         camera_pos = self._camera.pos * self._camera.size.x
         center = self._camera.size.x * zoom * (self._pos + translation) - zoom * camera_pos + 0.5 * self._camera.size
         self._scene_rect = self._image_to_draw.get_rect(center=center)
-        if self._transparency != 255:
-            self._image_to_draw.set_alpha(self._transparency)
         self._camera.screen.blit(self._image_to_draw, self._scene_rect.topleft)
 
     def update(self, parent: Item = None):
@@ -132,10 +148,11 @@ class ImageItem(RectItem):
                  size: Vector2,
                  theta: float = 0.0,
                  color: Tuple[int, int, int] = None,
-                 image: str = None):
+                 image: str = None,
+                 plus_z_value: float = 0.0):
         assert not (image is None and color is None)
         self._img = image
-        super().__init__(camera, pos, size, theta)
+        super().__init__(camera, pos, size, theta, plus_z_value=plus_z_value)
         if image is not None:
             self.load_image(image)
         else:
@@ -189,8 +206,8 @@ class TextItem(RectItem):
 
 
 class CompositeItem(Item):
-    def __init__(self, camera: Camera, pos: Vector2, size: Vector2, rotation: float = 0.0):
-        super().__init__(camera, pos, rotation)
+    def __init__(self, camera: Camera, pos: Vector2, size: Vector2, rotation: float = 0.0, plus_z_value=0):
+        super().__init__(camera, pos, rotation, plus_z_value=plus_z_value)
         self._size = size
         self._items = []
 

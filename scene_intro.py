@@ -64,9 +64,9 @@ class SceneIntro(Scene):
         self._player_car = Player(self._camera, Vector2(-0.20, -0.1))
         self._player_building = Player(self._camera, Vector2(0.15, -0.1))
         self._player_building._power = 10
-        self._car = Car(self._camera, self._player_car.pos + Vector2(0.10, 0.03))
+        self._car = Car(self._camera, self._player_car.pos + Vector2(0.10, 0.03), 0.0)
         self._car.set_size(Vector2(0.5 * self._car.size.x, 0.5 * self._car.size.y))
-        self._building = Building(self._camera, self._player_building.pos + Vector2(0.10, -0.03))
+        self._building = Building(self._camera, self._player_building.pos + Vector2(0.10, -0.03), 0.0)
         self._building.set_size(Vector2(0.5 * self._building.size.x, 0.5 * self._building.size.y))
         self._player_car.attack(self._car)
         self._player_building.attack(self._building)
@@ -107,7 +107,7 @@ class SceneIntro(Scene):
         self._t_protein += 1
         if self._t_protein == 35:
             self._t_protein = 0
-            self._proteins.append(Protein(self._camera, Vector2(-0.55, -0.4)))
+            self._proteins.append(Protein(self._camera, Vector2(-0.55, -0.4), 0.0))
             self._add_item(self._proteins[-1])
 
         for protein in self._proteins:
@@ -122,9 +122,9 @@ class SceneIntro(Scene):
             self._t_destroy = 0
             for item in [self._car, self._building]:
                 self._remove_item(item)
-            self._car = Car(self._camera, self._player_car.pos + Vector2(0.10, 0.03))
+            self._car = Car(self._camera, self._player_car.pos + Vector2(0.10, 0.03), 0.0)
             self._car.set_size(Vector2(0.5 * self._car.size.x, 0.5 * self._car.size.y))
-            self._building = Building(self._camera, self._player_building.pos + Vector2(0.10, -0.03))
+            self._building = Building(self._camera, self._player_building.pos + Vector2(0.10, -0.03), 0.0)
             self._building.set_size(Vector2(0.5 * self._building.size.x, 0.5 * self._building.size.y))
             for item in [self._car, self._building]:
                 self._add_item(item)

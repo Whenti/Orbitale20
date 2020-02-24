@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import pygame
+from astroid import List
 from pygame.event import Event
 
 from game_callback import GameCallback
@@ -14,8 +15,14 @@ class Scene:
         self._screen = screen
         self._items = []
 
-    def _add_item(self, item: Item):
-        self._items.append(item)
+    def _add_item(self, i: Item):
+        self._items.append(i)
+        self._items = sorted(self._items, key=lambda item_: item_.z_value)
+
+    def _add_items(self, items):
+        for item in items:
+            self._items.append(item)
+        self._items = sorted(self._items, key=lambda item_: item_.z_value)
 
     def _remove_item(self, item: Item):
         self._items.remove(item)
@@ -28,8 +35,7 @@ class Scene:
             item.update()
 
     def draw(self):
-        sorted_items = sorted(self._items, key=lambda item_: item_.z_value)
-        for item in sorted_items:
+        for item in self._items:
             item.draw()
 
 

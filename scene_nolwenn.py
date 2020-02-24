@@ -11,8 +11,7 @@ from scene import Scene, CompositeScene
 from scene_finish import SceneFinish
 from scene_start import SceneStart
 
-from utils import Road, Protein, Car, Obstacle, Rock
-
+from utils import Protein, Car, Obstacle, Building, Rock, construct_roads
 
 
 class GameMode(Enum):
@@ -20,8 +19,6 @@ class GameMode(Enum):
     GAME = 1
     END = 2
     DONE = 3
-
-from utils import Road, Protein, Car, Obstacle, Building
 
 
 class SceneNolwenn(Scene):
@@ -40,23 +37,18 @@ class SceneNolwenn(Scene):
         road_y_1 = 0.0
         road_y_2 = 0.2
 
-        # item image composite roads
-        self._road1 = Road(self._camera, Vector2(0, road_y_1), 'road1.png')
-        self._road1.set_z_value(20)
-        self._add_item(self._road1)
+        plus_z_value = 40.0
 
-        self._road2 = Road(self._camera, Vector2(0, road_y_2), 'road2.png')
-        self._road2.set_z_value(20)
-        self._add_item(self._road2)
+        # item image composite roads
+        self._roads1 = construct_roads(self._camera, Vector2(0, road_y_1), 'road1.png', plus_z_value=0.0)
+        self._roads2 = construct_roads(self._camera, Vector2(0, road_y_2), 'road2.png', plus_z_value=plus_z_value)
 
         # roads
         self._player1 = Player(self._camera, Vector2(0, road_y_1 - 0.08))
         self._player1.set_z_value(30)
-        self._add_item(self._player1)
 
-        self._player2 = Player(self._camera, Vector2(0, road_y_2 - 0.08))
+        self._player2 = Player(self._camera, Vector2(0, road_y_2 - 0.08), plus_z_value=plus_z_value)
         self._player2.set_z_value(30)
-        self._add_item(self._player2)
 
         # proteins
         self._proteins1 = []
@@ -73,59 +65,70 @@ class SceneNolwenn(Scene):
         # setting the road for both player
         for protein_list, road_y in zip([self._proteins1, self._proteins2], [road_y_1, road_y_2]):
             prot_delta = -0.02
-            protein_list.append(Protein(self._camera, Vector2(0.8, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(0.9, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(1.0, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(1.1, road_y + prot_delta)))
+            if road_y == road_y_2:
+                plus_z_value_ = plus_z_value
+            else:
+                plus_z_value_ = 0.0
+            protein_list.append(Protein(self._camera, Vector2(0.8, road_y + prot_delta), plus_z_value_))
+            protein_list.append(Protein(self._camera, Vector2(0.9, road_y + prot_delta), plus_z_value_))
+            protein_list.append(Protein(self._camera, Vector2(1.0, road_y + prot_delta), plus_z_value_))
+            protein_list.append(Protein(self._camera, Vector2(1.1, road_y + prot_delta), plus_z_value_))
 
-            protein_list.append(Protein(self._camera, Vector2(3, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(3.4, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(3.6, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(3.8, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(3, road_y + prot_delta), plus_z_value_))
+            protein_list.append(Protein(self._camera, Vector2(3.4, road_y + prot_delta), plus_z_value_))
+            protein_list.append(Protein(self._camera, Vector2(3.6, road_y + prot_delta), plus_z_value_))
+            protein_list.append(Protein(self._camera, Vector2(3.8, road_y + prot_delta), plus_z_value_))
 
-            protein_list.append(Protein(self._camera, Vector2(4.5, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(4.9, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(5.4, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(4.5, road_y + prot_delta), plus_z_value_))
+            protein_list.append(Protein(self._camera, Vector2(4.9, road_y + prot_delta), plus_z_value_))
+            protein_list.append(Protein(self._camera, Vector2(5.4, road_y + prot_delta), plus_z_value_))
 
-            protein_list.append(Protein(self._camera, Vector2(5.9, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(6.4, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(5.9, road_y + prot_delta), plus_z_value_))
+            protein_list.append(Protein(self._camera, Vector2(6.4, road_y + prot_delta), plus_z_value_))
 
-            protein_list.append(Protein(self._camera, Vector2(7.7, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(7.7, road_y + prot_delta), plus_z_value_))
 
-            protein_list.append(Protein(self._camera, Vector2(8.5, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(8.5, road_y + prot_delta), plus_z_value_))
 
-            protein_list.append(Protein(self._camera, Vector2(9, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(9, road_y + prot_delta), plus_z_value_))
 
-            protein_list.append(Protein(self._camera, Vector2(10.6, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(11.8, road_y + prot_delta)))
-            protein_list.append(Protein(self._camera, Vector2(12.2, road_y + prot_delta)))
+            protein_list.append(Protein(self._camera, Vector2(10.6, road_y + prot_delta), plus_z_value_))
+            protein_list.append(Protein(self._camera, Vector2(11.8, road_y + prot_delta), plus_z_value_))
+            protein_list.append(Protein(self._camera, Vector2(12.2, road_y + prot_delta), plus_z_value_))
 
 
         for obstacle_list, road_y in zip([self._obstacles1, self._obstacles2], [road_y_1, road_y_2]):
+            if road_y == road_y_2:
+                plus_z_value_ = plus_z_value
+            else:
+                plus_z_value_ = 0.0
             obstacle_delta = -0.01
-            obstacle_list.append(Obstacle(self._camera, Vector2(2.5, road_y + obstacle_delta)))
-            obstacle_list.append(Obstacle(self._camera, Vector2(4.1, road_y + obstacle_delta)))
-            obstacle_list.append(Obstacle(self._camera, Vector2(10.9, road_y + obstacle_delta)))
+            obstacle_list.append(Obstacle(self._camera, Vector2(2.5, road_y + obstacle_delta), plus_z_value_))
+            obstacle_list.append(Obstacle(self._camera, Vector2(4.1, road_y + obstacle_delta), plus_z_value_))
+            obstacle_list.append(Obstacle(self._camera, Vector2(10.9, road_y + obstacle_delta), plus_z_value_))
 
         for car_list, road_y in zip([self._cars1, self._cars2], [road_y_1, road_y_2]):
+            if road_y == road_y_2:
+                plus_z_value_ = plus_z_value
+            else:
+                plus_z_value_ = 0.0
             rock_delta = -0.002
             car_delta = -0.02
             building_delta = -0.2
-            car_list.append(Rock(self._camera, Vector2(5.6, road_y + car_delta)))
+            car_list.append(Rock(self._camera, Vector2(5.6, road_y + car_delta), plus_z_value_))
 
-            car_list.append(Car(self._camera, Vector2(6.7, road_y + car_delta)))
-            car_list.append(Car(self._camera, Vector2(7.1, road_y + car_delta)))
+            car_list.append(Car(self._camera, Vector2(6.7, road_y + car_delta), plus_z_value_))
+            car_list.append(Car(self._camera, Vector2(7.1, road_y + car_delta), plus_z_value_))
 
-            car_list.append(Car(self._camera, Vector2(9.4, road_y + car_delta)))
+            car_list.append(Car(self._camera, Vector2(9.4, road_y + car_delta), plus_z_value_))
 
-            car_list.append(Building(self._camera, Vector2(12.5, road_y + building_delta)))
+            car_list.append(Building(self._camera, Vector2(12.5, road_y + building_delta), plus_z_value_))
 
-        for protein in self._proteins1 + self._proteins2:
-            self._add_item(protein)
-        for obstacle in self._obstacles1 + self._obstacles2:
-            self._add_item(obstacle)
-        for car in self._cars1 + self._cars2:
-            self._add_item(car)
+        self._add_items(self._roads1 + self._roads2 +
+                        [self._player1, self._player2] +
+                        self._proteins1 + self._proteins2 +
+                        self._obstacles1 + self._obstacles2 +
+                        self._cars1 + self._cars2)
 
     def manage_events(self, event: Event):
         if self._mode == GameMode.GAME:
